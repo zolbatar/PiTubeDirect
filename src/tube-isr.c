@@ -250,7 +250,7 @@ void copro_armnative_tube_interrupt_handler(uint32_t mail) {
         switch (type) {
         case 6:
           remaining = 256;
-          // fall though to...
+          // fall through
         case 0:
         case 2:
           state = TRANSFER_R3;
@@ -262,7 +262,7 @@ void copro_armnative_tube_interrupt_handler(uint32_t mail) {
           break;
         case 7:
           remaining = 256;
-          // fall though to...
+          // fall through
         case 1:
         case 3:
           state = TRANSFER_R3;
