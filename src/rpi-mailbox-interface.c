@@ -9,7 +9,7 @@
 /* Make sure the property tag buffer is aligned to a 16-byte boundary because
    we only have 28-bits available in the property interface protocol to pass
    the address of the buffer to the VC. */
-static int *pt = ( int *) UNCACHED_MEM_BASE ;// [PROP_BUFFER_SIZE] __attribute__((aligned(16)));
+static uint32_t *pt = ( uint32_t *) UNCACHED_MEM_BASE ;// [PROP_BUFFER_SIZE] __attribute__((aligned(16)));
 static int pt_index ;
 
 //#define PRINT_PROP_DEBUG 1
@@ -184,7 +184,7 @@ void RPI_PropertyAddTag( rpi_mailbox_tag_t tag, ... )
 int RPI_PropertyProcess( void )
 {
     int result;
-    
+
 #if( PRINT_PROP_DEBUG == 1 )
     int i;
     LOG_INFO( "%s Length: %d\r\n", __func__, pt[PT_OSIZE] );
@@ -228,12 +228,12 @@ void RPI_PropertyProcessNoCheck( void )
 rpi_mailbox_property_t* RPI_PropertyGet( rpi_mailbox_tag_t tag)
 {
     static rpi_mailbox_property_t property;
-    int* tag_buffer = NULL;
+    uint32_t * tag_buffer = NULL;
 
     property.tag = tag;
 
     /* Get the tag from the buffer. Start at the first tag position  */
-    int index = 2;
+    uint32_t index = 2;
 
     while( index < ( pt[PT_OSIZE] >> 2 ) )
     {
