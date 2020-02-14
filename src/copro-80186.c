@@ -43,11 +43,11 @@ void copro_80186_emulator()
    unsigned int tube_irq_copy;
 
    // Remember the current copro so we can exit if it changes
-   int last_copro = copro;
+   unsigned int last_copro = copro;
 
-   copro_80186_poweron_reset(); 
+   copro_80186_poweron_reset();
    copro_80186_reset();
-  
+
    while (1)
    {
       exec86(1);
