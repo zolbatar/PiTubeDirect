@@ -2,7 +2,7 @@
  * Null Co Processor Emulation
  *
  * (c) 2016 David Banks
- * 
+ *
  */
 
 #include <stdio.h>
@@ -15,7 +15,7 @@
 
 void copro_null_emulator() {
    // Remember the current copro so we can exit if it changes
-   int last_copro = copro;
+   unsigned int last_copro = copro;
 
    printf("This is the NULL copro\r\n");
 

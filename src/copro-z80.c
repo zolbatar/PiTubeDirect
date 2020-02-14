@@ -288,7 +288,7 @@ int copro_z80_read_mem(unsigned int addr) {
    if (overlay_rom) {
       data = copro_z80_rom[addr & 0xfff];
    } else {
-#if USE_MEMORY_POINTER       
+#if USE_MEMORY_POINTER
       data = copro_z80_ram[addr & 0xffff];
 #else
       data = *(unsigned char *)(addr & 0xffff);
@@ -310,7 +310,7 @@ void copro_z80_write_mem(unsigned int addr, unsigned char data) {
 #endif
 #ifdef USE_MEMORY_POINTER
    copro_z80_ram[addr & 0xffff] = data;
-#else 
+#else
    *(unsigned char *)(addr & 0xffff) = data;
 #endif
 }
@@ -356,7 +356,7 @@ void copro_z80_emulator()
    unsigned int tube_irq_copy;
 
    // Remember the current copro so we can exit if it changes
-   int last_copro = copro;
+   unsigned int last_copro = copro;
 
    // Patch the OSWORD &FF code to change FEE5 to FCE5 (2 changes expected)
    check_elk_mode_and_patch(copro_z80_rom, 0xD30, 0xAA, 2);
