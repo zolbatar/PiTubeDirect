@@ -39,7 +39,7 @@ UINT8 * arm2_ram;
 
 #define R15 arm2_getR15()
 
-UINT8 copro_arm2_read8(int addr) {
+UINT8 copro_arm2_read8(unsigned int addr) {
    UINT8 result;
 
    if (addr <= RAM_MASK8) {
