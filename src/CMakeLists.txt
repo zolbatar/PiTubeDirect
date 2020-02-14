@@ -40,7 +40,8 @@ set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS}" )
 # Add any C compiler flags here. The C flags concerned with processor tuning
 # are in the toolchain files toolchain-arm-none-eabi-bcm2835.cmake, etc.
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2" )
-set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall" )
+set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -flto" )
+set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wno-unused-parameter" )
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -nostartfiles" )
 #set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fomit-frame-pointer " )
 #set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffixed-ip" )
