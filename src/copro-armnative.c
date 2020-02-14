@@ -51,7 +51,7 @@
 #include "tube-isr.h"
 #include "tube-ula.h"
 
-static int last_copro;
+static unsigned int last_copro;
 
 static jmp_buf reboot;
 
@@ -118,7 +118,7 @@ static void defaultExitHandler() {
   // Move back to supervisor mode
   swi(SWI_OS_EnterOS);
   // Jump back to the command prompt
-  longjmp(enterOS, 1);  
+  longjmp(enterOS, 1);
 }
 
 static void defaultUndefinedInstructionHandler() {
@@ -163,7 +163,7 @@ static void defaultUpcallHandler() {
 
 static void initEnv() {
   defaultEscapeFlag = 0;
-  int i;
+  unsigned int i;
   for (i = 0; i < sizeof(env->commandBuffer); i++) {
     env->commandBuffer[i] = 0;
   }
@@ -268,7 +268,7 @@ void copro_armnative_reset() {
   // Move back to supervisor mode
   swi(SWI_OS_EnterOS);
   // Jump back to the boot message
-  longjmp(reboot, 1);  
+  longjmp(reboot, 1);
 }
 
 /***********************************************************
