@@ -95,7 +95,7 @@ static const unsigned char partab[256] = {
    mm_PutBYTE(SP, x);                        \
 } while (0)
 
-#define JPC(cond) PC = cond ? GetWORD(PC) : PC+2
+#define JPC(cond) PC = cond ? (FASTREG) GetWORD(PC) : PC+2
 
 #define CALLC(cond) {                     \
     if (cond) {                        \
@@ -164,12 +164,12 @@ enum register_numbers {
    i_F,
    i_BC,
    i_DE,
-   i_HL, 
+   i_HL,
    i_A_,
    i_F_,
    i_BC_,
    i_DE_,
-   i_HL_, 
+   i_HL_,
    i_IX,
    i_IY,
    i_SP,
