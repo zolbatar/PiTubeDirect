@@ -256,9 +256,22 @@ _reset_continue:
     // initialise the ro data section (most things that have the const
     // declaration) and initialise the bss section variables to 0 (generally
     // known as automatics). It'll then call main
+    ldr     r4,=__bss_start__
+    ldr     r5,=__bss_end__
 
-    b      _cstartup
+    mov     r6,#0
+    mov     r7,#0
+    mov     r8,#0
+    mov     r9,#0
 
+    stmia   r4!,{r6,r7,r8,r9}
+    bic     r4,r4,#0x3F       // 64 byte align
+
+bssclearloop:
+    cmp     r4,r5
+    stmia   r4!,{r6,r7,r8,r9}
+    blt     bssclearloop
+    b       kernel_main
 
 .section ".text._get_stack_pointer"
 _get_stack_pointer:
