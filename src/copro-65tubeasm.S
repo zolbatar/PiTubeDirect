@@ -228,7 +228,7 @@
         FETCH_NEXT_STAGE_0
         FETCH_NEXT_STAGE_1b
 .endm
-#endif 
+#endif
 
 
 .macro FETCH_NEXT_STAGE_12
@@ -237,14 +237,14 @@
 .endm
 
 #ifdef RPI4
-.macro FETCH_NEXT_STAGE_012 
+.macro FETCH_NEXT_STAGE_012
         FETCH_NEXT_STAGE_0
         FETCH_NEXT_STAGE_1a
         FETCH_NEXT_STAGE_1b
         FETCH_NEXT_STAGE_2
 .endm
 #else
-.macro FETCH_NEXT_STAGE_012 
+.macro FETCH_NEXT_STAGE_012
         FETCH_NEXT_STAGE_1a
         FETCH_NEXT_STAGE_0
         FETCH_NEXT_STAGE_1b
@@ -390,7 +390,7 @@
 #else
 .macro LOAD_BYTE_FETCH_NEXT_STAGE_0 sign=SIGN reg
         LOAD_BYTE \sign \reg
-		FETCH_NEXT_STAGE_0
+        FETCH_NEXT_STAGE_0
 .endm
 #endif
 
@@ -1116,6 +1116,43 @@ opcode_17:
 
 // Opcode 18 - CLC
 opcode_18:
+#if  defined(RPI3) || defined(RPI4)
+
+        FETCH_NEXT_STAGE_01_I
+        bxcc    next_op
+        BMI     clcneg
+        moveqs  temp2,tregs,LSR #32  //clear C and set Z_FLAG ( upper bits of tregs are zero)
+        movnes  temp1,#0x200     //clear C and clear z flag
+        FETCH_NEXT_STAGE_2
+
+clcneg:
+        movnes  temp2,tregs,LSL #16+5      // clear carry sets n flag clear z flag
+        msreq     CPSR_flg,#N_FLAG + Z_FLAG
+        FETCH_NEXT_STAGE_2
+
+/*
+        FETCH_NEXT_STAGE_01_I
+        bxcc    next_op
+        BMI     clcneg
+        beq     clcZ
+        movs  temp1,#0x200     //clear C and clear z flag
+        FETCH_NEXT_STAGE_2
+
+clcneg:
+        beq   clcnegZ
+        movs  temp2,tregs,LSL #16+5      // clear carry sets n flag clear z flag
+        FETCH_NEXT_STAGE_2
+clcZ:
+        movs    temp2,tregs,LSR #32  //clear C and set Z_FLAG ( upper bits of tregs are zero)
+        FETCH_NEXT_STAGE_2
+
+clcnegZ:
+        msr     CPSR_flg,#N_FLAG + Z_FLAG
+
+*/
+
+#else
+
 #ifdef RPI3
         mrs     temp2, CPSR
         FETCH_NEXT_STAGE_0_I
@@ -1129,6 +1166,7 @@ opcode_18:
         bxcc    next_op
         bic     temp1, temp1, #C_FLAG
         msr     CPSR_flg, temp1
+#endif
 #endif
         FETCH_NEXT_STAGE_2
         .balign I_ALIGN
@@ -1376,14 +1414,30 @@ opcode_37:
 
 // Opcode 38 - SEC
 opcode_38:
+
+#if  defined(RPI3) || defined(RPI4)
+        FETCH_NEXT_STAGE_01_I
+        bxcs    next_op
+        BMI     secneg
+        movnes  temp2,#0x7fffffff           // set carry flag  no Z flag
+        subeqs  temp2,temp2,temp2           // set carry flag and z flag
+        FETCH_NEXT_STAGE_2
+
+secneg:
+        movnes  temp2,tregs,LSL #16+5+1      // set carry sets n flag clear z flag
+        msreq   CPSR_flg,#C_FLAG + N_FLAG + Z_FLAG
+        FETCH_NEXT_STAGE_2
+
+#else
         mrscc     temp1, CPSR
         FETCH_NEXT_STAGE_01_I
         bxcs    next_op
         orr     temp1, temp1, #C_FLAG
         msr     CPSR_flg, temp1              // takes two cycles
         FETCH_NEXT_STAGE_2
-        .balign I_ALIGN
 
+#endif
+        .balign I_ALIGN
 // Opcode 39 - AND $0000,Y
 opcode_39:
         EA_ABSOLUTE_INDEXED_LOAD regY
@@ -1940,15 +1994,15 @@ opcode_84:
 
 // Opcode 85 - STA $00
 opcode_85:
-#ifdef RPI4 
+#ifdef RPI4
+        FETCH_NEXT_STAGE_0
+        STORE_BYTE    regA
+        FETCH_NEXT_STAGE_12
+#else
         STORE_BYTE    regA
         ARMV8_NOP
         FETCH_NEXT_STAGE_012
-#else
-		FETCH_NEXT_STAGE_0
-        STORE_BYTE    regA
-        FETCH_NEXT_STAGE_12
-#endif		
+#endif
         .balign I_ALIGN
 
 // Opcode 86 - STX $00
@@ -3344,7 +3398,7 @@ tube_store_handler_regA:
         mov     temp1, regA
 tube_store_handler:
         push    {r2-r3,r12}
-        and     r1, #0xff
+        and     r1, temp1, #0xff
         bl      tube_parasite_write_banksel
         pop     {r2-r3,r12}
         FETCH_NEXT_STAGE_0
