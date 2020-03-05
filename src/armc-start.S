@@ -265,7 +265,7 @@ _reset_continue:
     mov     r9,#0
 
     stmia   r4!,{r6,r7,r8,r9}
-    bic     r4,r4,#0x3F       // 64 byte align
+    bic     r4,r4,#0xF         // 16 byte align
 
 bssclearloop:
     cmp     r4,r5
