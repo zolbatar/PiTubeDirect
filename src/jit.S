@@ -3086,12 +3086,13 @@ cacheflushloopI:
    MCR p15, 0, temp, c7, c5, 0 //; invalidate I cache and BTB
    MCR p15, 0, temp, c7, c5, 4 // flush prefetch buffer
 #endif
-        ldr     r8, =GPCLR0
-        mov     r7, #TEST2_MASK
-        str     r7, [r8]
+
 #endif
 
 #endif
+      ldr     r8, =GPCLR0
+      mov     r7, #TEST2_MASK
+      str     r7, [r8]
 
    pop {r3-r11}
    msr CPSR, r4  // Restore the 6502 flags, and interrupt state present on entry
