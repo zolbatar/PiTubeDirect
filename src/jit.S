@@ -2505,8 +2505,6 @@ exec_65tube_exit:     // We get here from the Event handler when RST is detected
    ldr r13,stackptr  // Hack to ensure the stack ptr is on the right place
    pop {r4-r11,pc}
 
-
-
 CACHELINE_ALIGN = 5
 .equ    CPSR_MODE_USER,         0x10
 .equ    CPSR_MODE_FIQ,          0x11
