@@ -2505,25 +2505,7 @@ exec_65tube_exit:     // We get here from the Event handler when RST is detected
    ldr r13,stackptr  // Hack to ensure the stack ptr is on the right place
    pop {r4-r11,pc}
 
-.ltorg
-debugflag:
-   .word 0
-old_fiq_vector:
-   .word 0
-fiq_lr_temp:
-   .word 0
-fiq_spsr_temp:
-   .word 0
-stackptr:
-   .word 0
-ram6502store:
-   .word 0
-#if defined(RPI2) || defined(RPI3) || defined(RPI4)
-cachelineD:
-   .word 0
-cachelineI:
-   .word 0
-#endif
+
 
 CACHELINE_ALIGN = 5
 .equ    CPSR_MODE_USER,         0x10
@@ -2641,7 +2623,26 @@ handle_nmi:
    msr     CPSR_flg, r2   // Restore the 6502 flags
    INTR    -6, 0, FAKE
 .ltorg
-
+#if JITDEBUG
+debugflag:
+   .word 0
+#endif
+old_fiq_vector:
+   .word 0
+fiq_lr_temp:
+   .word 0
+fiq_spsr_temp:
+   .word 0
+stackptr:
+   .word 0
+ram6502store:
+   .word 0
+#if defined(RPI2) || defined(RPI3) || defined(RPI4)
+cachelineD:
+   .word 0
+cachelineI:
+   .word 0
+#endif
 // **** dejit functions
 
 // so we get here by storing data to a location that has already been jitted
@@ -3007,19 +3008,19 @@ cacheflushloopD:
    add r2,r2,r12
 cacheflushloopI:
    MCR p15,0,r6, c7, c5, 1 // instruction (ICIMVAU)
-   Nop  // why are these needed ?? ( see Twinhead vortex )
+   DSB  // why are these needed ?? ( see Twinhead vortex )
    add r6,r6,r12
    MCR p15,0,r6, c7, c5, 1 // instruction
-   nop  // why are these needed ?? ( see Twinhead vortex )
+   DSB  // why are these needed ?? ( see Twinhead vortex )
    add r6,r6,r12
    MCR p15,0,r7, c7, c5, 1 // instruction
-   nop  // why are these needed ?? ( see Twinhead vortex )
+   DSB  // why are these needed ?? ( see Twinhead vortex )
    add r7,r7,r12
    cmp r6,r2
    blt cacheflushloopI
 
    DSB
-   MCR p15, 0, temp0, c7, c5, 6 //; invalidate all of the BTB (BPIALL)
+   MCR p15, 0, temp0, c7, c5, 6 // invalidate all of the BTB (BPIALL)
 
    DSB
    ISB
