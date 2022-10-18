@@ -2,20 +2,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-instruction_t* load_expression(buffer_t* bf) {
-	list code = list_init(sizeof(instruction_t));
+cvec_instruction_t load_expression(buffer_t *bf) {
+	cvec_instruction_t code = cvec_instruction_t_init();
 
 	// Process each in turn
 	uint8_t opcode = INSTRUCTION_END;
 	do {
-		opcode = process_instruction(code, bf);
+		opcode = process_instruction(&code, bf);
 	}
-	while (opcode!=INSTRUCTION_END);
+	while (opcode != INSTRUCTION_END);
 
-	// Copy to array (as faster to access)
-	instruction_t *code_array = malloc(sizeof(instruction_t)*list_size(code));
-	list_copy_to_array(code_array, code);
-	list_destroy(code);
-	return code_array;
+	return code;
 }
 

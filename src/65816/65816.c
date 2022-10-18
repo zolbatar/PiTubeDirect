@@ -4,6 +4,7 @@
   65816 parasite CPU emulation
   Originally from Snem, with some bugfixes*/
 
+#include <stdint.h>
 #include <stdio.h>
 #include "65816.h"
 
@@ -26,7 +27,8 @@ static uint32_t w65816nvb = 0x00;
 /*Registers*/
 typedef union {
     uint16_t w;
-    struct {
+    struct
+    {
         uint8_t l, h;
     } b;
 } reg;
@@ -70,7 +72,7 @@ static uint32_t toldpc;
 
 #ifdef INCLUDE_DEBUGGER
 
-static const char *dbg65816_reg_names[] = { "AB", "X", "Y", "S", "P", "PC", "DP", "DB", "PB", NULL };
+static const char *dbg65816_reg_names[] = {"AB", "X", "Y", "S", "P", "PC", "DP", "DB", "PB", NULL};
 
 static int dbg_w65816 = 0;
 
@@ -150,83 +152,89 @@ static inline void unpack_flags_em(uint8_t flags)
 
 static uint32_t dbg_reg_get(int which)
 {
-    switch (which) {
-        case REG_A:
-            return w65816a.w;
-        case REG_X:
-            return w65816x.w;
-        case REG_Y:
-            return w65816y.w;
-        case REG_S:
-            return w65816s.w;
-        case REG_P:
-            return pack_flags();
-        case REG_PC:
-            return pc;
-        case REG_DP:
-            return dp;
-        case REG_DB:
-            return dbr;
-        case REG_PB:
-            return pbr;
-        default:
-            LOG_WARN("65816: attempt to get non-existent register");
-            return 0;
+    switch (which)
+    {
+    case REG_A:
+        return w65816a.w;
+    case REG_X:
+        return w65816x.w;
+    case REG_Y:
+        return w65816y.w;
+    case REG_S:
+        return w65816s.w;
+    case REG_P:
+        return pack_flags();
+    case REG_PC:
+        return pc;
+    case REG_DP:
+        return dp;
+    case REG_DB:
+        return dbr;
+    case REG_PB:
+        return pbr;
+    default:
+        LOG_WARN("65816: attempt to get non-existent register");
+        return 0;
     }
 }
 
 static void dbg_reg_set(int which, uint32_t value)
 {
-    switch (which) {
-        case REG_A:
-            w65816a.w = (uint16_t)value;
-            break;
-        case REG_X:
-            w65816x.w = (uint16_t)value;
-            break;
-        case REG_Y:
-            w65816y.w = (uint16_t)value;
-            break;
-        case REG_S:
-            w65816s.w = (uint16_t)value;
-            break;
-        case REG_P:
-            unpack_flags((uint8_t)value);
-            break;
-        case REG_PC:
-            pc = (uint16_t)value;
-            break;
-        case REG_DP:
-            dp = (uint16_t)value;
-            break;
-        case REG_DB:
-            dbr = value;
-            break;
-        case REG_PB:
-            pbr = value;
-            break;
-        default:
-            LOG_WARN("65816: attempt to set non-existent register");
+    switch (which)
+    {
+    case REG_A:
+        w65816a.w = (uint16_t)value;
+        break;
+    case REG_X:
+        w65816x.w = (uint16_t)value;
+        break;
+    case REG_Y:
+        w65816y.w = (uint16_t)value;
+        break;
+    case REG_S:
+        w65816s.w = (uint16_t)value;
+        break;
+    case REG_P:
+        unpack_flags((uint8_t)value);
+        break;
+    case REG_PC:
+        pc = (uint16_t)value;
+        break;
+    case REG_DP:
+        dp = (uint16_t)value;
+        break;
+    case REG_DB:
+        dbr = value;
+        break;
+    case REG_PB:
+        pbr = value;
+        break;
+    default:
+        LOG_WARN("65816: attempt to set non-existent register");
     }
 }
 
 static size_t dbg65816_print_flags(char *buf, size_t bufsize)
 {
-    if (bufsize >= 10) {
-        *buf++ = p.n  ? 'N' : ' ';
-        *buf++ = p.v  ? 'V' : ' ';
-        if (p.e) {
+    if (bufsize >= 10)
+    {
+        *buf++ = p.n ? 'N' : ' ';
+        *buf++ = p.v ? 'V' : ' ';
+        if (p.e)
+        {
             *buf++ = '-';
             *buf++ = 'B';
-        } else {
-            *buf++ = p.m  ? 'M' : ' ';
+        }
+        else
+        {
+            *buf++ = p.m ? 'M' : ' ';
             *buf++ = p.ex ? 'X' : ' ';
         }
-        *buf++ = p.d  ? 'D' : ' ';
-        *buf++ = p.i  ? 'I' : ' ';
-        *buf++ = p.z  ? 'Z' : ' ';
-        *buf++ = p.c  ? 'C' : ' ';
-        *buf++ = p.e  ? 'E' : ' ';
+        *buf++ = p.d ? 'D' : ' ';
+        *buf++ = p.i ? 'I' : ' ';
+        *buf++ = p.z ? 'Z' : ' ';
+        *buf++ = p.c ? 'C' : ' ';
+        *buf++ = p.e ? 'E' : ' ';
         // Also add a terminator, as snprintf would
         *buf++ = 0;
         return 9;
@@ -236,11 +244,12 @@ static size_t dbg65816_print_flags(char *buf, size_t bufsize)
 
 static size_t dbg_reg_print(int which, char *buf, size_t bufsize)
 {
-    switch (which) {
-        case REG_P:
-            return dbg65816_print_flags(buf, bufsize);
-        default:
-            return (size_t)snprintf(buf, bufsize, "%04"PRIX32, dbg_reg_get(which));
+    switch (which)
+    {
+    case REG_P:
+        return dbg65816_print_flags(buf, bufsize);
+    default:
+        return (size_t)snprintf(buf, bufsize, "%04" PRIX32, dbg_reg_get(which));
     }
 }
 
@@ -260,16 +269,16 @@ static uint32_t dbg_get_instr_addr(void)
 }
 
 cpu_debug_t w65816_cpu_debug = {
-    .cpu_name       = "65816",
-    .debug_enable   = dbg_debug_enable,
-    .memread        = do_readmem65816,
-    .memwrite       = do_writemem65816,
-    .disassemble    = dbg_disassemble,
-    .reg_names      = dbg65816_reg_names,
-    .reg_get        = dbg_reg_get,
-    .reg_set        = dbg_reg_set,
-    .reg_print      = dbg_reg_print,
-    .reg_parse      = dbg_reg_parse,
+    .cpu_name = "65816",
+    .debug_enable = dbg_debug_enable,
+    .memread = do_readmem65816,
+    .memwrite = do_writemem65816,
+    .disassemble = dbg_disassemble,
+    .reg_names = dbg65816_reg_names,
+    .reg_get = dbg_reg_get,
+    .reg_set = dbg_reg_set,
+    .reg_print = dbg_reg_print,
+    .reg_parse = dbg_reg_parse,
     .get_instr_addr = dbg_get_instr_addr
     //    .print_addr     = debug_print_addr16
 };
@@ -284,7 +293,8 @@ static uint32_t dbg_disassemble(uint32_t addr, char *buf, size_t bufsize)
 static uint32_t do_readmem65816(uint32_t addr)
 {
     addr &= w65816mask;
-    if ((addr & ~7u) == 0xFEF8) {
+    if ((addr & ~7u) == 0xFEF8)
+    {
         return tube_parasite_read(addr);
     }
     if ((addr & 0x78000) == 0x8000 && (def || (banking & 8)))
@@ -312,7 +322,7 @@ static uint16_t readmemw65816(uint32_t addr)
     uint16_t value;
 
     addr &= w65816mask;
-    value = (uint16_t) (do_readmem65816(addr) | (do_readmem65816(addr + 1) << 8));
+    value = (uint16_t)(do_readmem65816(addr) | (do_readmem65816(addr + 1) << 8));
 #ifdef INCLUDE_DEBUGGER
     if (dbg_w65816)
         debug_memread(&w65816_cpu_debug, addr, value, 2);
@@ -325,42 +335,48 @@ static int endtimeslice;
 static void do_writemem65816(uint32_t addr, uint32_t val)
 {
     addr &= w65816mask;
-    if ((addr & ~7u) == 0xFEF0) {
-        switch (val & 7) {
-            case 0:
-            case 1:
-                def = val & 1;
-                break;
-            case 2:
-            case 3:
-                divider = (uint8_t) ((divider >> 1) | ((val & 1) << 3));
-                break;
-            case 4:
-            case 5:
-                banking = (uint8_t) ((banking >> 1) | ((val & 1) << 3));
-                break;
-            case 6:
-            case 7:
-                banknum = (uint8_t) ((banknum >> 1) | ((val & 1) << 5));
-                break;
+    if ((addr & ~7u) == 0xFEF0)
+    {
+        switch (val & 7)
+        {
+        case 0:
+        case 1:
+            def = val & 1;
+            break;
+        case 2:
+        case 3:
+            divider = (uint8_t)((divider >> 1) | ((val & 1) << 3));
+            break;
+        case 4:
+        case 5:
+            banking = (uint8_t)((banking >> 1) | ((val & 1) << 3));
+            break;
+        case 6:
+        case 7:
+            banknum = (uint8_t)((banknum >> 1) | ((val & 1) << 5));
+            break;
         }
         if (def || !(banking & 4))
             w65816mask = 0xFFFF;
         else
             w65816mask = W65816_RAM_SIZE - 1;
-        printf("def=%x divider=%x banking=%x banknum=%x mask=%"PRIX32"\r\n", def, divider, banking, banknum, w65816mask);
+        printf("def=%x divider=%x banking=%x banknum=%x mask=%" PRIX32 "\r\n", def, divider, banking, banknum,
+               w65816mask);
         return;
     }
-    if ((addr & ~7u) == 0xFEF8) {
+    if ((addr & ~7u) == 0xFEF8)
+    {
         tube_parasite_write(addr, (uint8_t)val);
         endtimeslice = 1;
         return;
     }
-    if ((addr & 0x7C000) == 0x4000 && !def && (banking & 1)) {
+    if ((addr & 0x7C000) == 0x4000 && !def && (banking & 1))
+    {
         w65816ram[(addr & 0x3FFF) | ((banknum & 7) << 14)] = (uint8_t)val;
         return;
     }
-    if ((addr & 0x7C000) == 0x8000 && !def && (banking & 2)) {
+    if ((addr & 0x7C000) == 0x8000 && !def && (banking & 2))
+    {
         w65816ram[(addr & 0x3FFF) | (((banknum >> 3) & 7) << 14)] = (uint8_t)val;
         return;
     }
@@ -389,10 +405,10 @@ static void writememw65816(uint32_t addr, uint16_t v)
     do_writemem65816(addr + 1, v >> 8);
 }
 
-#define readmem(a)     readmem65816(a)
-#define readmemw(a)    readmemw65816(a)
-#define writemem(a,v)  writemem65816(a,v)
-#define writememw(a,v) writememw65816(a,v)
+#define readmem(a) readmem65816(a)
+#define readmemw(a) readmemw65816(a)
+#define writemem(a, v) writemem65816(a, v)
+#define writememw(a, v) writememw65816(a, v)
 
 #define clockspc(c)
 
@@ -451,7 +467,8 @@ static inline uint32_t zeropage(void)
     uint32_t temp = readmem(pbr | pc);
     pc++;
     temp += dp;
-    if (dp & 0xFF) {
+    if (dp & 0xFF)
+    {
         cycles--;
         clockspc(6);
     }
@@ -465,7 +482,8 @@ static inline uint32_t zeropagex(void)
     if (p.e)
         temp &= 0xFF;
     temp += dp;
-    if (dp & 0xFF) {
+    if (dp & 0xFF)
+    {
         cycles--;
         clockspc(6);
     }
@@ -479,7 +497,8 @@ static inline uint32_t zeropagey(void)
     if (p.e)
         temp &= 0xFF;
     temp += dp;
-    if (dp & 0xFF) {
+    if (dp & 0xFF)
+    {
         cycles--;
         clockspc(6);
     }
@@ -531,12 +550,14 @@ static uint32_t indirectyE(void)
 {
     uint32_t addr1, addr2;
     uint8_t imm = readmem(pbr | pc++);
-    if (imm == 0xff) {
+    if (imm == 0xff)
+    {
         /* Fetching the two bytes of the indirect address wraps within the page */
         addr1 = readmem((dp + imm) & 0xffff);
         addr1 |= readmem(dp) << 8;
     }
-    else {
+    else
+    {
         /* The indirect address is two bytes fetched normally. */
         addr1 = (imm + dp) & 0xFFFF;
         addr1 = readmemw(addr1);
@@ -560,7 +581,7 @@ static inline uint32_t indirectl(void)
     uint32_t temp, addr;
     temp = (readmem(pbr | pc) + dp) & 0xFFFF;
     pc++;
-    addr = (uint32_t) (readmemw(temp) | (readmem(temp + 2) << 16));
+    addr = (uint32_t)(readmemw(temp) | (readmem(temp + 2) << 16));
     return addr;
 }
 
@@ -569,7 +590,7 @@ static inline uint32_t indirectly(void)
     uint32_t temp, addr;
     temp = (readmem(pbr | pc) + dp) & 0xFFFF;
     pc++;
-    addr =  (uint32_t) ((readmemw(temp) | (readmem(temp + 2) << 16)) + y.w);
+    addr = (uint32_t)((readmemw(temp) | (readmem(temp + 2) << 16)) + y.w);
     return addr;
 }
 
@@ -577,23 +598,23 @@ static inline uint32_t indirectly(void)
 
 static inline void setzn8(uint8_t v)
 {
-    p.z=!(v);
-    p.n=(v)&0x80;
+    p.z = !(v);
+    p.n = (v)&0x80;
 }
 
 static inline void setzn16(uint16_t v)
 {
-    p.z=!(v);
-    p.n=(v)&0x8000;
+    p.z = !(v);
+    p.n = (v)&0x8000;
 }
 
 /*ADC/SBC*/
 
 static inline void adcbin8(uint8_t temp)
 {
-    uint16_t tempw= (uint16_t) (a.b.l + temp + ((p.c) ? 1 : 0));
+    uint16_t tempw = (uint16_t)(a.b.l + temp + ((p.c) ? 1 : 0));
     p.v = (!((a.b.l ^ temp) & 0x80) && ((a.b.l ^ tempw) & 0x80));
-    a.b.l = (uint8_t) (tempw);
+    a.b.l = (uint8_t)(tempw);
     setzn8(a.b.l);
     p.c = tempw & 0x100;
 }
@@ -604,7 +625,8 @@ static inline void adcbcd8(uint8_t temp)
 
     ah = 0;
     al = (a.b.l & 0xF) + (temp & 0xF) + (p.c ? 1 : 0);
-    if (al > 9) {
+    if (al > 9)
+    {
         al -= 10;
         al &= 0xF;
         ah = 1;
@@ -612,12 +634,13 @@ static inline void adcbcd8(uint8_t temp)
     ah += ((a.b.l >> 4) + (temp >> 4));
     p.v = (((ah << 4) ^ a.b.l) & 0x80) && !((a.b.l ^ temp) & 0x80);
     p.c = 0;
-    if (ah > 9) {
+    if (ah > 9)
+    {
         p.c = 1;
         ah -= 10;
         ah &= 0xF;
     }
-    a.b.l = (uint8_t) ((al & 0xF) | (ah << 4));
+    a.b.l = (uint8_t)((al & 0xF) | (ah << 4));
     setzn8(a.b.l);
     cycles--;
     clockspc(6);
@@ -633,7 +656,7 @@ static inline void adc8(uint8_t temp)
 
 static inline void adcbin16(uint16_t tempw)
 {
-    uint32_t templ = (uint32_t) (a.w+tempw + ((p.c) ? 1 : 0));
+    uint32_t templ = (uint32_t)(a.w + tempw + ((p.c) ? 1 : 0));
     p.v = (!((a.w ^ tempw) & 0x8000) && ((a.w ^ templ) & 0x8000));
     a.w = templ & 0xFFFF;
     setzn16(a.w);
@@ -642,7 +665,7 @@ static inline void adcbin16(uint16_t tempw)
 
 static inline void adcbcd16(uint16_t tempw)
 {
-    uint32_t templ = (uint32_t) ((a.w & 0xF) + (tempw & 0xF) + (p.c ? 1 : 0));
+    uint32_t templ = (uint32_t)((a.w & 0xF) + (tempw & 0xF) + (p.c ? 1 : 0));
     if (templ > 9)
         templ += 6;
     templ += ((a.w & 0xF0) + (tempw & 0xF0));
@@ -654,10 +677,10 @@ static inline void adcbcd16(uint16_t tempw)
     templ += ((a.w & 0xF000) + (tempw & 0xF000));
     if (templ > 0x9FFF)
         templ += 0x6000;
-    p.v= (!((a.w ^ tempw) & 0x8000) && ((a.w ^ templ) & 0x8000));
+    p.v = (!((a.w ^ tempw) & 0x8000) && ((a.w ^ templ) & 0x8000));
     a.w = templ & 0xFFFF;
     setzn16(a.w);
-    p.c=templ > 0xFFFF;
+    p.c = templ > 0xFFFF;
     cycles--;
     clockspc(6);
 }
@@ -672,9 +695,9 @@ static inline void adc16(uint16_t temp)
 
 static inline void sbcbin8(uint8_t temp)
 {
-    uint16_t tempw = (uint16_t) (a.b.l - temp - ((p.c) ? 0 : 1));
+    uint16_t tempw = (uint16_t)(a.b.l - temp - ((p.c) ? 0 : 1));
     p.v = (((a.b.l ^ temp) & 0x80) && ((a.b.l ^ tempw) & 0x80));
-    a.b.l = (uint8_t) (tempw);
+    a.b.l = (uint8_t)(tempw);
     setzn8(a.b.l);
     p.c = tempw <= 0xFF;
 }
@@ -686,15 +709,15 @@ static inline void sbcbcd8(uint8_t temp)
     int32_t tempv;
 
     al = (a.b.l & 0x0f) - (temp & 0x0f) - (p.c ? 0 : 1);
-    tempw = (int16_t) (a.b.l - temp - (p.c ? 0 : 1));
+    tempw = (int16_t)(a.b.l - temp - (p.c ? 0 : 1));
     tempv = (signed char)a.b.l - (signed char)temp - (p.c ? 0 : 1);
     p.v = ((tempw & 0x80) > 0) ^ ((tempv & 0x100) != 0);
     p.c = tempw >= 0;
     if (tempw < 0)
-       tempw -= 0x60;
+        tempw -= 0x60;
     if (al < 0)
-       tempw -= 0x06;
-    a.b.l = (uint8_t) (tempw);
+        tempw -= 0x06;
+    a.b.l = (uint8_t)(tempw);
     setzn8(a.b.l);
     cycles--;
     clockspc(6);
@@ -710,16 +733,16 @@ static inline void sbc8(uint8_t temp)
 
 static inline void sbcbin16(uint16_t tempw)
 {
-    uint32_t templ = (uint32_t) (a.w - tempw - ((p.c) ? 0 : 1));
+    uint32_t templ = (uint32_t)(a.w - tempw - ((p.c) ? 0 : 1));
     p.v = (((a.w ^ tempw) & (a.w ^ templ)) & 0x8000);
     a.w = templ & 0xFFFF;
     setzn16(a.w);
-    p.c=templ<=0xFFFF;
+    p.c = templ <= 0xFFFF;
 }
 
 static inline void sbcbcd16(uint16_t tempw)
 {
-    uint32_t templ = (uint32_t) ((a.w & 0xF) - (tempw & 0xF) - (p.c ? 0 : 1));
+    uint32_t templ = (uint32_t)((a.w & 0xF) - (tempw & 0xF) - (p.c ? 0 : 1));
     if (templ > 9)
         templ -= 6;
     templ += ((a.w & 0xF0) - (tempw & 0xF0));
@@ -734,7 +757,7 @@ static inline void sbcbcd16(uint16_t tempw)
     p.v = (((a.w ^ tempw) & 0x8000) && ((a.w ^ templ) & 0x8000));
     a.w = templ & 0xFFFF;
     setzn16(a.w);
-    p.c=templ <= 0xFFFF;
+    p.c = templ <= 0xFFFF;
     cycles--;
     clockspc(6);
 }
@@ -1061,7 +1084,8 @@ static void xce(void)
     readmem(pbr | pc);
     // When re-entering native mode, the X and M flags will be 1 (8-bits)
     // (i.e. these flags are not preserved in emulation mode)
-    if (p.c && !p.e) {
+    if (p.c && !p.e)
+    {
         p.ex = p.m = 1;
     }
     updatecpumode();
@@ -1082,7 +1106,8 @@ static void sep(void)
         p.v = 1;
     if (temp & 0x80)
         p.n = 1;
-    if (!p.e) {
+    if (!p.e)
+    {
         if (temp & 0x10)
             p.ex = 1;
         if (temp & 0x20)
@@ -1106,7 +1131,8 @@ static void rep65816(void)
         p.v = 0;
     if (temp & 0x80)
         p.n = 0;
-    if (!p.e) {
+    if (!p.e)
+    {
         if (temp & 0x10)
             p.ex = 0;
         if (temp & 0x20)
@@ -3016,28 +3042,28 @@ static void cmpIndirectLongy16(void)
 static void phb(void)
 {
     readmem(pbr | pc);
-    writemem(s.w, (uint8_t) (dbr >> 16));
+    writemem(s.w, (uint8_t)(dbr >> 16));
     s.w--;
 }
 
 static void phbe(void)
 {
     readmem(pbr | pc);
-    writemem(s.w, (uint8_t) (dbr >> 16));
+    writemem(s.w, (uint8_t)(dbr >> 16));
     s.b.l--;
 }
 
 static void phk(void)
 {
     readmem(pbr | pc);
-    writemem(s.w, (uint8_t) (pbr >> 16));
+    writemem(s.w, (uint8_t)(pbr >> 16));
     s.w--;
 }
 
 static void phke(void)
 {
     readmem(pbr | pc);
-    writemem(s.w, (uint8_t) (pbr >> 16));
+    writemem(s.w, (uint8_t)(pbr >> 16));
     s.b.l--;
 }
 
@@ -3045,7 +3071,7 @@ static void pea(void)
 {
     uint32_t addr = readmemw(pbr | pc);
     pc += 2;
-    writemem(s.w, (uint8_t) (addr >> 8));
+    writemem(s.w, (uint8_t)(addr >> 8));
     s.w--;
     writemem(s.w, addr & 0xFF);
     s.w--;
@@ -3054,7 +3080,7 @@ static void pea(void)
 static void pei(void)
 {
     uint32_t addr = indirect();
-    writemem(s.w, (uint8_t) (addr >> 8));
+    writemem(s.w, (uint8_t)(addr >> 8));
     s.w--;
     writemem(s.w, addr & 0xFF);
     s.w--;
@@ -3065,7 +3091,7 @@ static void per(void)
     uint32_t addr = readmemw(pbr | pc);
     pc += 2;
     addr += pc;
-    writemem(s.w, (uint8_t) (addr >> 8));
+    writemem(s.w, (uint8_t)(addr >> 8));
     s.w--;
     writemem(s.w, addr & 0xFFu);
     s.w--;
@@ -3073,7 +3099,7 @@ static void per(void)
 
 static void phd(void)
 {
-    writemem(s.w, (uint8_t) (dp >> 8));
+    writemem(s.w, (uint8_t)(dp >> 8));
     s.w--;
     writemem(s.w, dp & 0xFFu);
     s.w--;
@@ -3087,7 +3113,7 @@ static void pld(void)
     clockspc(6);
     dp = readmem(s.w);
     s.w++;
-    dp |= (uint16_t) (readmem(s.w) << 8);
+    dp |= (uint16_t)(readmem(s.w) << 8);
 }
 
 static void pha8(void)
@@ -3404,9 +3430,10 @@ static void cpyAbs16(void)
 /*Branch group*/
 static void bcc(void)
 {
-    int8_t temp = (int8_t) readmem(pbr | pc++);
-    if (!p.c) {
-        pc = (uint16_t) ( pc + temp);
+    int8_t temp = (int8_t)readmem(pbr | pc++);
+    if (!p.c)
+    {
+        pc = (uint16_t)(pc + temp);
         cycles--;
         clockspc(6);
     }
@@ -3414,9 +3441,10 @@ static void bcc(void)
 
 static void bcs(void)
 {
-    int8_t temp = (int8_t) readmem(pbr | pc++);
-    if (p.c) {
-        pc = (uint16_t) ( pc + temp);
+    int8_t temp = (int8_t)readmem(pbr | pc++);
+    if (p.c)
+    {
+        pc = (uint16_t)(pc + temp);
         cycles--;
         clockspc(6);
     }
@@ -3424,9 +3452,10 @@ static void bcs(void)
 
 static void beq(void)
 {
-    int8_t temp = (int8_t) readmem(pbr | pc++);
-    if (p.z) {
-        pc = (uint16_t) ( pc + temp);
+    int8_t temp = (int8_t)readmem(pbr | pc++);
+    if (p.z)
+    {
+        pc = (uint16_t)(pc + temp);
         cycles--;
         clockspc(6);
     }
@@ -3434,9 +3463,10 @@ static void beq(void)
 
 static void bne(void)
 {
-    int8_t temp = (int8_t) readmem(pbr | pc++);
-    if (!p.z) {
-        pc = (uint16_t) ( pc + temp);
+    int8_t temp = (int8_t)readmem(pbr | pc++);
+    if (!p.z)
+    {
+        pc = (uint16_t)(pc + temp);
         cycles--;
         clockspc(6);
     }
@@ -3444,9 +3474,10 @@ static void bne(void)
 
 static void bpl(void)
 {
-    int8_t temp = (int8_t) readmem(pbr | pc++);
-    if (!p.n) {
-        pc = (uint16_t) ( pc + temp);
+    int8_t temp = (int8_t)readmem(pbr | pc++);
+    if (!p.n)
+    {
+        pc = (uint16_t)(pc + temp);
         cycles--;
         clockspc(6);
     }
@@ -3454,9 +3485,10 @@ static void bpl(void)
 
 static void bmi(void)
 {
-    int8_t temp = (int8_t) readmem(pbr | pc++);
-    if (p.n) {
-        pc = (uint16_t) ( pc + temp);
+    int8_t temp = (int8_t)readmem(pbr | pc++);
+    if (p.n)
+    {
+        pc = (uint16_t)(pc + temp);
         cycles--;
         clockspc(6);
     }
@@ -3464,9 +3496,10 @@ static void bmi(void)
 
 static void bvc(void)
 {
-    int8_t temp = (int8_t) readmem(pbr | pc++);
-    if (!p.v) {
-        pc = (uint16_t) ( pc + temp);
+    int8_t temp = (int8_t)readmem(pbr | pc++);
+    if (!p.v)
+    {
+        pc = (uint16_t)(pc + temp);
         cycles--;
         clockspc(6);
     }
@@ -3474,9 +3507,10 @@ static void bvc(void)
 
 static void bvs(void)
 {
-    int8_t temp = (int8_t) readmem(pbr | pc++);
-    if (p.v) {
-        pc = (uint16_t) ( pc + temp);
+    int8_t temp = (int8_t)readmem(pbr | pc++);
+    if (p.v)
+    {
+        pc = (uint16_t)(pc + temp);
         cycles--;
         clockspc(6);
     }
@@ -3484,9 +3518,9 @@ static void bvs(void)
 
 static void bra(void)
 {
-    int8_t temp = (int8_t) readmem(pbr | pc++);
-    //pc += temp;
-    pc = (uint16_t) ( pc + temp);
+    int8_t temp = (int8_t)readmem(pbr | pc++);
+    // pc += temp;
+    pc = (uint16_t)(pc + temp);
     cycles--;
     clockspc(6);
 }
@@ -3508,8 +3542,8 @@ static void jmp(void)
 
 static void jmplong(void)
 {
-    uint32_t addr = (uint32_t) (readmemw(pbr | pc) | (readmem((pbr | pc) + 2) << 16));
-    pc = (uint16_t) (addr & 0xFFFFu);
+    uint32_t addr = (uint32_t)(readmemw(pbr | pc) | (readmem((pbr | pc) + 2) << 16));
+    pc = (uint16_t)(addr & 0xFFFFu);
     pbr = addr & 0xFF0000;
 }
 
@@ -3534,7 +3568,7 @@ static void jsr(void)
 {
     uint16_t addr = readmemw(pbr | pc++);
     readmem(pbr | pc);
-    writemem(s.w, (uint8_t) (pc >> 8));
+    writemem(s.w, (uint8_t)(pc >> 8));
     s.w--;
     writemem(s.w, pc & 0xFFu);
     s.w--;
@@ -3545,7 +3579,7 @@ static void jsrE(void)
 {
     uint16_t addr = readmemw(pbr | pc++);
     readmem(pbr | pc);
-    writemem(s.w, (uint8_t) (pc >> 8));
+    writemem(s.w, (uint8_t)(pc >> 8));
     s.b.l--;
     writemem(s.w, pc & 0xFFu);
     s.b.l--;
@@ -3556,7 +3590,7 @@ static void jsrIndx(void)
 {
     uint32_t addr = jindirectx();
     pc--;
-    writemem(s.w, (uint8_t) (pc >> 8));
+    writemem(s.w, (uint8_t)(pc >> 8));
     s.w--;
     writemem(s.w, pc & 0xFFu);
     s.w--;
@@ -3567,7 +3601,7 @@ static void jsrIndxE(void)
 {
     uint32_t addr = jindirectx();
     pc--;
-    writemem(s.w, (uint8_t) (pc >> 8));
+    writemem(s.w, (uint8_t)(pc >> 8));
     s.b.l--;
     writemem(s.w, pc & 0xFFu);
     s.b.l--;
@@ -3580,9 +3614,9 @@ static void jsl(void)
     uint16_t addr = readmemw(pbr | pc);
     pc += 2;
     temp = readmem(pbr | pc);
-    writemem(s.w, (uint8_t) (pbr >> 16));
+    writemem(s.w, (uint8_t)(pbr >> 16));
     s.w--;
-    writemem(s.w, (uint8_t) (pc >> 8));
+    writemem(s.w, (uint8_t)(pc >> 8));
     s.w--;
     writemem(s.w, pc & 0xFFu);
     s.w--;
@@ -3596,9 +3630,9 @@ static void jslE(void)
     uint16_t addr = readmemw(pbr | pc);
     pc += 2;
     temp = readmem(pbr | pc);
-    writemem(s.w, (uint8_t) (pbr >> 16));
+    writemem(s.w, (uint8_t)(pbr >> 16));
     s.b.l--;
-    writemem(s.w, (uint8_t) (pc >> 8));
+    writemem(s.w, (uint8_t)(pc >> 8));
     s.b.l--;
     writemem(s.w, pc & 0xFFu);
     s.b.l--;
@@ -3624,7 +3658,7 @@ static void rtlE(void)
     s.b.l++;
     pc = readmem(s.w);
     s.b.l++;
-    pc |= (uint16_t) (readmem(s.w) << 8);
+    pc |= (uint16_t)(readmem(s.w) << 8);
     s.b.l++;
     pbr = readmem(s.w) << 16;
     pc++;
@@ -3646,7 +3680,7 @@ static void rtsE(void)
     s.b.l++;
     pc = readmem(s.w);
     s.b.l++;
-    pc |= (uint16_t) (readmem(s.w) << 8);
+    pc |= (uint16_t)(readmem(s.w) << 8);
     pc++;
 }
 
@@ -3659,7 +3693,7 @@ static void rti(void)
     s.w++;
     pc = readmem(s.w);
     s.w++;
-    pc |= (uint16_t) (readmem(s.w) << 8);
+    pc |= (uint16_t)(readmem(s.w) << 8);
     s.w++;
     pbr = readmem(s.w) << 16;
     updatecpumode();
@@ -3674,7 +3708,7 @@ static void rtiE(void)
     s.b.l++;
     pc = readmem(s.w);
     s.b.l++;
-    pc |= (uint16_t) (readmem(s.w) << 8);
+    pc |= (uint16_t)(readmem(s.w) << 8);
     updatecpumode();
 }
 
@@ -4086,7 +4120,7 @@ static void rorAbsx16(void)
 static void xba(void)
 {
     readmem(pbr | pc);
-    a.w = (uint16_t) ((a.w >> 8) | (a.w << 8));
+    a.w = (uint16_t)((a.w >> 8) | (a.w << 8));
     setzn8(a.b.l);
 }
 
@@ -4251,8 +4285,8 @@ static void mvn(void)
 static void op_brk(void)
 {
     pc++;
-    writemem(s.w--, (uint8_t) (pbr >> 16));
-    writemem(s.w--, (uint8_t) (pc >> 8));
+    writemem(s.w--, (uint8_t)(pbr >> 16));
+    writemem(s.w--, (uint8_t)(pc >> 8));
     writemem(s.w--, pc & 0xFFu);
     writemem(s.w--, pack_flags());
     pc = readmemw((w65816nvb << 16) | 0xFFE6);
@@ -4264,7 +4298,7 @@ static void op_brk(void)
 static void brkE(void)
 {
     pc++;
-    writemem(s.w--, (uint8_t) (pc >> 8));
+    writemem(s.w--, (uint8_t)(pc >> 8));
     writemem(s.w--, pc & 0xFFu);
     writemem(s.w--, pack_flags_em(0x30));
     pc = readmemw(0xFFFE);
@@ -4276,8 +4310,8 @@ static void brkE(void)
 static void cop(void)
 {
     pc++;
-    writemem(s.w--, (uint8_t) (pbr >> 16));
-    writemem(s.w--, (uint8_t) (pc >> 8));
+    writemem(s.w--, (uint8_t)(pbr >> 16));
+    writemem(s.w--, (uint8_t)(pc >> 8));
     writemem(s.w--, pc & 0xFFu);
     writemem(s.w--, pack_flags());
     pc = readmemw((w65816nvb << 16) | 0xFFE4);
@@ -4289,7 +4323,7 @@ static void cop(void)
 static void cope(void)
 {
     pc++;
-    writemem(s.w--, (uint8_t) (pc >> 8));
+    writemem(s.w--, (uint8_t)(pc >> 8));
     writemem(s.w--, pc & 0xFFu);
     writemem(s.w--, pack_flags_em(0));
     pc = readmemw(0xFFF4);
@@ -4312,1299 +4346,1296 @@ static void stp(void)
 }
 
 /*Opcode table*/
-static void (*opcodes[5][256])() =
-{
-    {
-        op_brk,             /* X1M1 00 */
-        oraIndirectx8,      /* X1M1 01 */
-        cop,                /* X1M1 02 */
-        oraSp8,             /* X1M1 03 */
-        tsbZp8,             /* X1M1 04 */
-        oraZp8,             /* X1M1 05 */
-        aslZp8,             /* X1M1 06 */
-        oraIndirectLong8,   /* X1M1 07 */
-        php,                /* X1M1 08 */
-        oraImm8,            /* X1M1 09 */
-        asla8,              /* X1M1 0a */
-        phd,                /* X1M1 0b */
-        tsbAbs8,            /* X1M1 0c */
-        oraAbs8,            /* X1M1 0d */
-        aslAbs8,            /* X1M1 0e */
-        oraLong8,           /* X1M1 0f */
-        bpl,                /* X1M1 10 */
-        oraIndirecty8,      /* X1M1 11 */
-        oraIndirect8,       /* X1M1 12 */
-        orasIndirecty8,     /* X1M1 13 */
-        trbZp8,             /* X1M1 14 */
-        oraZpx8,            /* X1M1 15 */
-        aslZpx8,            /* X1M1 16 */
-        oraIndirectLongy8,  /* X1M1 17 */
-        clc,                /* X1M1 18 */
-        oraAbsy8,           /* X1M1 19 */
-        inca8,              /* X1M1 1a */
-        tcs,                /* X1M1 1b */
-        trbAbs8,            /* X1M1 1c */
-        oraAbsx8,           /* X1M1 1d */
-        aslAbsx8,           /* X1M1 1e */
-        oraLongx8,          /* X1M1 1f */
-        jsr,                /* X1M1 20 */
-        andIndirectx8,      /* X1M1 21 */
-        jsl,                /* X1M1 22 */
-        andSp8,             /* X1M1 23 */
-        bitZp8,             /* X1M1 24 */
-        andZp8,             /* X1M1 25 */
-        rolZp8,             /* X1M1 26 */
-        andIndirectLong8,   /* X1M1 27 */
-        plp,                /* X1M1 28 */
-        andImm8,            /* X1M1 29 */
-        rola8,              /* X1M1 2a */
-        pld,                /* X1M1 2b */
-        bitAbs8,            /* X1M1 2c */
-        andAbs8,            /* X1M1 2d */
-        rolAbs8,            /* X1M1 2e */
-        andLong8,           /* X1M1 2f */
-        bmi,                /* X1M1 30 */
-        andIndirecty8,      /* X1M1 31 */
-        andIndirect8,       /* X1M1 32 */
-        andsIndirecty8,     /* X1M1 33 */
-        bitZpx8,            /* X1M1 34 */
-        andZpx8,            /* X1M1 35 */
-        rolZpx8,            /* X1M1 36 */
-        andIndirectLongy8,  /* X1M1 37 */
-        sec,                /* X1M1 38 */
-        andAbsy8,           /* X1M1 39 */
-        deca8,              /* X1M1 3a */
-        tsc,                /* X1M1 3b */
-        bitAbsx8,           /* X1M1 3c */
-        andAbsx8,           /* X1M1 3d */
-        rolAbsx8,           /* X1M1 3e */
-        andLongx8,          /* X1M1 3f */
-        rti,                /* X1M1 40 */
-        eorIndirectx8,      /* X1M1 41 */
-        wdm,                /* X1M1 42 */
-        eorSp8,             /* X1M1 43 */
-        mvp,                /* X1M1 44 */
-        eorZp8,             /* X1M1 45 */
-        lsrZp8,             /* X1M1 46 */
-        eorIndirectLong8,   /* X1M1 47 */
-        pha8,               /* X1M1 48 */
-        eorImm8,            /* X1M1 49 */
-        lsra8,              /* X1M1 4a */
-        phk,                /* X1M1 4b */
-        jmp,                /* X1M1 4c */
-        eorAbs8,            /* X1M1 4d */
-        lsrAbs8,            /* X1M1 4e */
-        eorLong8,           /* X1M1 4f */
-        bvc,                /* X1M1 50 */
-        eorIndirecty8,      /* X1M1 51 */
-        eorIndirect8,       /* X1M1 52 */
-        eorsIndirecty8,     /* X1M1 53 */
-        mvn,                /* X1M1 54 */
-        eorZpx8,            /* X1M1 55 */
-        lsrZpx8,            /* X1M1 56 */
-        eorIndirectLongy8,  /* X1M1 57 */
-        cli,                /* X1M1 58 */
-        eorAbsy8,           /* X1M1 59 */
-        phy8,               /* X1M1 5a */
-        tcd,                /* X1M1 5b */
-        jmplong,            /* X1M1 5c */
-        eorAbsx8,           /* X1M1 5d */
-        lsrAbsx8,           /* X1M1 5e */
-        eorLongx8,          /* X1M1 5f */
-        rts,                /* X1M1 60 */
-        adcIndirectx8,      /* X1M1 61 */
-        per,                /* X1M1 62 */
-        adcSp8,             /* X1M1 63 */
-        stzZp8,             /* X1M1 64 */
-        adcZp8,             /* X1M1 65 */
-        rorZp8,             /* X1M1 66 */
-        adcIndirectLong8,   /* X1M1 67 */
-        pla8,               /* X1M1 68 */
-        adcImm8,            /* X1M1 69 */
-        rora8,              /* X1M1 6a */
-        rtl,                /* X1M1 6b */
-        jmpind,             /* X1M1 6c */
-        adcAbs8,            /* X1M1 6d */
-        rorAbs8,            /* X1M1 6e */
-        adcLong8,           /* X1M1 6f */
-        bvs,                /* X1M1 70 */
-        adcIndirecty8,      /* X1M1 71 */
-        adcIndirect8,       /* X1M1 72 */
-        adcsIndirecty8,     /* X1M1 73 */
-        stzZpx8,            /* X1M1 74 */
-        adcZpx8,            /* X1M1 75 */
-        rorZpx8,            /* X1M1 76 */
-        adcIndirectLongy8,  /* X1M1 77 */
-        sei,                /* X1M1 78 */
-        adcAbsy8,           /* X1M1 79 */
-        ply8,               /* X1M1 7a */
-        tdc,                /* X1M1 7b */
-        jmpindx,            /* X1M1 7c */
-        adcAbsx8,           /* X1M1 7d */
-        rorAbsx8,           /* X1M1 7e */
-        adcLongx8,          /* X1M1 7f */
-        bra,                /* X1M1 80 */
-        staIndirectx8,      /* X1M1 81 */
-        brl,                /* X1M1 82 */
-        staSp8,             /* X1M1 83 */
-        styZp8,             /* X1M1 84 */
-        staZp8,             /* X1M1 85 */
-        stxZp8,             /* X1M1 86 */
-        staIndirectLong8,   /* X1M1 87 */
-        dey8,               /* X1M1 88 */
-        bitImm8,            /* X1M1 89 */
-        txa8,               /* X1M1 8a */
-        phb,                /* X1M1 8b */
-        styAbs8,            /* X1M1 8c */
-        staAbs8,            /* X1M1 8d */
-        stxAbs8,            /* X1M1 8e */
-        staLong8,           /* X1M1 8f */
-        bcc,                /* X1M1 90 */
-        staIndirecty8,      /* X1M1 91 */
-        staIndirect8,       /* X1M1 92 */
-        staSIndirecty8,     /* X1M1 93 */
-        styZpx8,            /* X1M1 94 */
-        staZpx8,            /* X1M1 95 */
-        stxZpy8,            /* X1M1 96 */
-        staIndirectLongy8,  /* X1M1 97 */
-        tya8,               /* X1M1 98 */
-        staAbsy8,           /* X1M1 99 */
-        txs8,               /* X1M1 9a */
-        txy8,               /* X1M1 9b */
-        stzAbs8,            /* X1M1 9c */
-        staAbsx8,           /* X1M1 9d */
-        stzAbsx8,           /* X1M1 9e */
-        staLongx8,          /* X1M1 9f */
-        ldyImm8,            /* X1M1 a0 */
-        ldaIndirectx8,      /* X1M1 a1 */
-        ldxImm8,            /* X1M1 a2 */
-        ldaSp8,             /* X1M1 a3 */
-        ldyZp8,             /* X1M1 a4 */
-        ldaZp8,             /* X1M1 a5 */
-        ldxZp8,             /* X1M1 a6 */
-        ldaIndirectLong8,   /* X1M1 a7 */
-        tay8,               /* X1M1 a8 */
-        ldaImm8,            /* X1M1 a9 */
-        tax8,               /* X1M1 aa */
-        plb,                /* X1M1 ab */
-        ldyAbs8,            /* X1M1 ac */
-        ldaAbs8,            /* X1M1 ad */
-        ldxAbs8,            /* X1M1 ae */
-        ldaLong8,           /* X1M1 af */
-        bcs,                /* X1M1 b0 */
-        ldaIndirecty8,      /* X1M1 b1 */
-        ldaIndirect8,       /* X1M1 b2 */
-        ldaSIndirecty8,     /* X1M1 b3 */
-        ldyZpx8,            /* X1M1 b4 */
-        ldaZpx8,            /* X1M1 b5 */
-        ldxZpy8,            /* X1M1 b6 */
-        ldaIndirectLongy8,  /* X1M1 b7 */
-        clv,                /* X1M1 b8 */
-        ldaAbsy8,           /* X1M1 b9 */
-        tsx8,               /* X1M1 ba */
-        tyx8,               /* X1M1 bb */
-        ldyAbsx8,           /* X1M1 bc */
-        ldaAbsx8,           /* X1M1 bd */
-        ldxAbsy8,           /* X1M1 be */
-        ldaLongx8,          /* X1M1 bf */
-        cpyImm8,            /* X1M1 c0 */
-        cmpIndirectx8,      /* X1M1 c1 */
-        rep65816,           /* X1M1 c2 */
-        cmpSp8,             /* X1M1 c3 */
-        cpyZp8,             /* X1M1 c4 */
-        cmpZp8,             /* X1M1 c5 */
-        decZp8,             /* X1M1 c6 */
-        cmpIndirectLong8,   /* X1M1 c7 */
-        iny8,               /* X1M1 c8 */
-        cmpImm8,            /* X1M1 c9 */
-        dex8,               /* X1M1 ca */
-        wai,                /* X1M1 cb */
-        cpyAbs8,            /* X1M1 cc */
-        cmpAbs8,            /* X1M1 cd */
-        decAbs8,            /* X1M1 ce */
-        cmpLong8,           /* X1M1 cf */
-        bne,                /* X1M1 d0 */
-        cmpIndirecty8,      /* X1M1 d1 */
-        cmpIndirect8,       /* X1M1 d2 */
-        cmpsIndirecty8,     /* X1M1 d3 */
-        pei,                /* X1M1 d4 */
-        cmpZpx8,            /* X1M1 d5 */
-        decZpx8,            /* X1M1 d6 */
-        cmpIndirectLongy8,  /* X1M1 d7 */
-        cld,                /* X1M1 d8 */
-        cmpAbsy8,           /* X1M1 d9 */
-        phx8,               /* X1M1 da */
-        stp,                /* X1M1 db */
-        jmlind,             /* X1M1 dc */
-        cmpAbsx8,           /* X1M1 dd */
-        decAbsx8,           /* X1M1 de */
-        cmpLongx8,          /* X1M1 df */
-        cpxImm8,            /* X1M1 e0 */
-        sbcIndirectx8,      /* X1M1 e1 */
-        sep,                /* X1M1 e2 */
-        sbcSp8,             /* X1M1 e3 */
-        cpxZp8,             /* X1M1 e4 */
-        sbcZp8,             /* X1M1 e5 */
-        incZp8,             /* X1M1 e6 */
-        sbcIndirectLong8,   /* X1M1 e7 */
-        inx8,               /* X1M1 e8 */
-        sbcImm8,            /* X1M1 e9 */
-        nop,                /* X1M1 ea */
-        xba,                /* X1M1 eb */
-        cpxAbs8,            /* X1M1 ec */
-        sbcAbs8,            /* X1M1 ed */
-        incAbs8,            /* X1M1 ee */
-        sbcLong8,           /* X1M1 ef */
-        beq,                /* X1M1 f0 */
-        sbcIndirecty8,      /* X1M1 f1 */
-        sbcIndirect8,       /* X1M1 f2 */
-        sbcsIndirecty8,     /* X1M1 f3 */
-        pea,                /* X1M1 f4 */
-        sbcZpx8,            /* X1M1 f5 */
-        incZpx8,            /* X1M1 f6 */
-        sbcIndirectLongy8,  /* X1M1 f7 */
-        sed,                /* X1M1 f8 */
-        sbcAbsy8,           /* X1M1 f9 */
-        plx8,               /* X1M1 fa */
-        xce,                /* X1M1 fb */
-        jsrIndx,            /* X1M1 fc */
-        sbcAbsx8,           /* X1M1 fd */
-        incAbsx8,           /* X1M1 fe */
-        sbcLongx8,          /* X1M1 ff */
-    },
-    {
-        op_brk,             /* X1M0 00 */
-        oraIndirectx16,     /* X1M0 01 */
-        cop,                /* X1M0 02 */
-        oraSp16,            /* X1M0 03 */
-        tsbZp16,            /* X1M0 04 */
-        oraZp16,            /* X1M0 05 */
-        aslZp16,            /* X1M0 06 */
-        oraIndirectLong16,  /* X1M0 07 */
-        php,                /* X1M0 08 */
-        oraImm16,           /* X1M0 09 */
-        asla16,             /* X1M0 0a */
-        phd,                /* X1M0 0b */
-        tsbAbs16,           /* X1M0 0c */
-        oraAbs16,           /* X1M0 0d */
-        aslAbs16,           /* X1M0 0e */
-        oraLong16,          /* X1M0 0f */
-        bpl,                /* X1M0 10 */
-        oraIndirecty16,     /* X1M0 11 */
-        oraIndirect16,      /* X1M0 12 */
-        orasIndirecty16,    /* X1M0 13 */
-        trbZp16,            /* X1M0 14 */
-        oraZpx16,           /* X1M0 15 */
-        aslZpx16,           /* X1M0 16 */
-        oraIndirectLongy16, /* X1M0 17 */
-        clc,                /* X1M0 18 */
-        oraAbsy16,          /* X1M0 19 */
-        inca16,             /* X1M0 1a */
-        tcs,                /* X1M0 1b */
-        trbAbs16,           /* X1M0 1c */
-        oraAbsx16,          /* X1M0 1d */
-        aslAbsx16,          /* X1M0 1e */
-        oraLongx16,         /* X1M0 1f */
-        jsr,                /* X1M0 20 */
-        andIndirectx16,     /* X1M0 21 */
-        jsl,                /* X1M0 22 */
-        andSp16,            /* X1M0 23 */
-        bitZp16,            /* X1M0 24 */
-        andZp16,            /* X1M0 25 */
-        rolZp16,            /* X1M0 26 */
-        andIndirectLong16,  /* X1M0 27 */
-        plp,                /* X1M0 28 */
-        andImm16,           /* X1M0 29 */
-        rola16,             /* X1M0 2a */
-        pld,                /* X1M0 2b */
-        bitAbs16,           /* X1M0 2c */
-        andAbs16,           /* X1M0 2d */
-        rolAbs16,           /* X1M0 2e */
-        andLong16,          /* X1M0 2f */
-        bmi,                /* X1M0 30 */
-        andIndirecty16,     /* X1M0 31 */
-        andIndirect16,      /* X1M0 32 */
-        andsIndirecty16,    /* X1M0 33 */
-        bitZpx16,           /* X1M0 34 */
-        andZpx16,           /* X1M0 35 */
-        rolZpx16,           /* X1M0 36 */
-        andIndirectLongy16, /* X1M0 37 */
-        sec,                /* X1M0 38 */
-        andAbsy16,          /* X1M0 39 */
-        deca16,             /* X1M0 3a */
-        tsc,                /* X1M0 3b */
-        bitAbsx16,          /* X1M0 3c */
-        andAbsx16,          /* X1M0 3d */
-        rolAbsx16,          /* X1M0 3e */
-        andLongx16,         /* X1M0 3f */
-        rti,                /* X1M0 40 */
-        eorIndirectx16,     /* X1M0 41 */
-        wdm,                /* X1M0 42 */
-        eorSp16,            /* X1M0 43 */
-        mvp,                /* X1M0 44 */
-        eorZp16,            /* X1M0 45 */
-        lsrZp16,            /* X1M0 46 */
-        eorIndirectLong16,  /* X1M0 47 */
-        pha16,              /* X1M0 48 */
-        eorImm16,           /* X1M0 49 */
-        lsra16,             /* X1M0 4a */
-        phk,                /* X1M0 4b */
-        jmp,                /* X1M0 4c */
-        eorAbs16,           /* X1M0 4d */
-        lsrAbs16,           /* X1M0 4e */
-        eorLong16,          /* X1M0 4f */
-        bvc,                /* X1M0 50 */
-        eorIndirecty16,     /* X1M0 51 */
-        eorIndirect16,      /* X1M0 52 */
-        eorsIndirecty16,    /* X1M0 53 */
-        mvn,                /* X1M0 54 */
-        eorZpx16,           /* X1M0 55 */
-        lsrZpx16,           /* X1M0 56 */
-        eorIndirectLongy16, /* X1M0 57 */
-        cli,                /* X1M0 58 */
-        eorAbsy16,          /* X1M0 59 */
-        phy8,               /* X1M0 5a */
-        tcd,                /* X1M0 5b */
-        jmplong,            /* X1M0 5c */
-        eorAbsx16,          /* X1M0 5d */
-        lsrAbsx16,          /* X1M0 5e */
-        eorLongx16,         /* X1M0 5f */
-        rts,                /* X1M0 60 */
-        adcIndirectx16,     /* X1M0 61 */
-        per,                /* X1M0 62 */
-        adcSp16,            /* X1M0 63 */
-        stzZp16,            /* X1M0 64 */
-        adcZp16,            /* X1M0 65 */
-        rorZp16,            /* X1M0 66 */
-        adcIndirectLong16,  /* X1M0 67 */
-        pla16,              /* X1M0 68 */
-        adcImm16,           /* X1M0 69 */
-        rora16,             /* X1M0 6a */
-        rtl,                /* X1M0 6b */
-        jmpind,             /* X1M0 6c */
-        adcAbs16,           /* X1M0 6d */
-        rorAbs16,           /* X1M0 6e */
-        adcLong16,          /* X1M0 6f */
-        bvs,                /* X1M0 70 */
-        adcIndirecty16,     /* X1M0 71 */
-        adcIndirect16,      /* X1M0 72 */
-        adcsIndirecty16,    /* X1M0 73 */
-        stzZpx16,           /* X1M0 74 */
-        adcZpx16,           /* X1M0 75 */
-        rorZpx16,           /* X1M0 76 */
-        adcIndirectLongy16, /* X1M0 77 */
-        sei,                /* X1M0 78 */
-        adcAbsy16,          /* X1M0 79 */
-        ply8,               /* X1M0 7a */
-        tdc,                /* X1M0 7b */
-        jmpindx,            /* X1M0 7c */
-        adcAbsx16,          /* X1M0 7d */
-        rorAbsx16,          /* X1M0 7e */
-        adcLongx16,         /* X1M0 7f */
-        bra,                /* X1M0 80 */
-        staIndirectx16,     /* X1M0 81 */
-        brl,                /* X1M0 82 */
-        staSp16,            /* X1M0 83 */
-        styZp8,             /* X1M0 84 */
-        staZp16,            /* X1M0 85 */
-        stxZp8,             /* X1M0 86 */
-        staIndirectLong16,  /* X1M0 87 */
-        dey8,               /* X1M0 88 */
-        bitImm16,           /* X1M0 89 */
-        txa16,              /* X1M0 8a */
-        phb,                /* X1M0 8b */
-        styAbs8,            /* X1M0 8c */
-        staAbs16,           /* X1M0 8d */
-        stxAbs8,            /* X1M0 8e */
-        staLong16,          /* X1M0 8f */
-        bcc,                /* X1M0 90 */
-        staIndirecty16,     /* X1M0 91 */
-        staIndirect16,      /* X1M0 92 */
-        staSIndirecty16,    /* X1M0 93 */
-        styZpx8,            /* X1M0 94 */
-        staZpx16,           /* X1M0 95 */
-        stxZpy8,            /* X1M0 96 */
-        staIndirectLongy16, /* X1M0 97 */
-        tya16,              /* X1M0 98 */
-        staAbsy16,          /* X1M0 99 */
-        txs8,               /* X1M0 9a */
-        txy8,               /* X1M0 9b */
-        stzAbs16,           /* X1M0 9c */
-        staAbsx16,          /* X1M0 9d */
-        stzAbsx16,          /* X1M0 9e */
-        staLongx16,         /* X1M0 9f */
-        ldyImm8,            /* X1M0 a0 */
-        ldaIndirectx16,     /* X1M0 a1 */
-        ldxImm8,            /* X1M0 a2 */
-        ldaSp16,            /* X1M0 a3 */
-        ldyZp8,             /* X1M0 a4 */
-        ldaZp16,            /* X1M0 a5 */
-        ldxZp8,             /* X1M0 a6 */
-        ldaIndirectLong16,  /* X1M0 a7 */
-        tay8,               /* X1M0 a8 */
-        ldaImm16,           /* X1M0 a9 */
-        tax8,               /* X1M0 aa */
-        plb,                /* X1M0 ab */
-        ldyAbs8,            /* X1M0 ac */
-        ldaAbs16,           /* X1M0 ad */
-        ldxAbs8,            /* X1M0 ae */
-        ldaLong16,          /* X1M0 af */
-        bcs,                /* X1M0 b0 */
-        ldaIndirecty16,     /* X1M0 b1 */
-        ldaIndirect16,      /* X1M0 b2 */
-        ldaSIndirecty16,    /* X1M0 b3 */
-        ldyZpx8,            /* X1M0 b4 */
-        ldaZpx16,           /* X1M0 b5 */
-        ldxZpy8,            /* X1M0 b6 */
-        ldaIndirectLongy16, /* X1M0 b7 */
-        clv,                /* X1M0 b8 */
-        ldaAbsy16,          /* X1M0 b9 */
-        tsx8,               /* X1M0 ba */
-        tyx8,               /* X1M0 bb */
-        ldyAbsx8,           /* X1M0 bc */
-        ldaAbsx16,          /* X1M0 bd */
-        ldxAbsy8,           /* X1M0 be */
-        ldaLongx16,         /* X1M0 bf */
-        cpyImm8,            /* X1M0 c0 */
-        cmpIndirectx16,     /* X1M0 c1 */
-        rep65816,           /* X1M0 c2 */
-        cmpSp16,            /* X1M0 c3 */
-        cpyZp8,             /* X1M0 c4 */
-        cmpZp16,            /* X1M0 c5 */
-        decZp16,            /* X1M0 c6 */
-        cmpIndirectLong16,  /* X1M0 c7 */
-        iny8,               /* X1M0 c8 */
-        cmpImm16,           /* X1M0 c9 */
-        dex8,               /* X1M0 ca */
-        wai,                /* X1M0 cb */
-        cpyAbs8,            /* X1M0 cc */
-        cmpAbs16,           /* X1M0 cd */
-        decAbs16,           /* X1M0 ce */
-        cmpLong16,          /* X1M0 cf */
-        bne,                /* X1M0 d0 */
-        cmpIndirecty16,     /* X1M0 d1 */
-        cmpIndirect16,      /* X1M0 d2 */
-        cmpsIndirecty16,    /* X1M0 d3 */
-        pei,                /* X1M0 d4 */
-        cmpZpx16,           /* X1M0 d5 */
-        decZpx16,           /* X1M0 d6 */
-        cmpIndirectLongy16, /* X1M0 d7 */
-        cld,                /* X1M0 d8 */
-        cmpAbsy16,          /* X1M0 d9 */
-        phx8,               /* X1M0 da */
-        stp,                /* X1M0 db */
-        jmlind,             /* X1M0 dc */
-        cmpAbsx16,          /* X1M0 dd */
-        decAbsx16,          /* X1M0 de */
-        cmpLongx16,         /* X1M0 df */
-        cpxImm8,            /* X1M0 e0 */
-        sbcIndirectx16,     /* X1M0 e1 */
-        sep,                /* X1M0 e2 */
-        sbcSp16,            /* X1M0 e3 */
-        cpxZp8,             /* X1M0 e4 */
-        sbcZp16,            /* X1M0 e5 */
-        incZp16,            /* X1M0 e6 */
-        sbcIndirectLong16,  /* X1M0 e7 */
-        inx8,               /* X1M0 e8 */
-        sbcImm16,           /* X1M0 e9 */
-        nop,                /* X1M0 ea */
-        xba,                /* X1M0 eb */
-        cpxAbs8,            /* X1M0 ec */
-        sbcAbs16,           /* X1M0 ed */
-        incAbs16,           /* X1M0 ee */
-        sbcLong16,          /* X1M0 ef */
-        beq,                /* X1M0 f0 */
-        sbcIndirecty16,     /* X1M0 f1 */
-        sbcIndirect16,      /* X1M0 f2 */
-        sbcsIndirecty16,    /* X1M0 f3 */
-        pea,                /* X1M0 f4 */
-        sbcZpx16,           /* X1M0 f5 */
-        incZpx16,           /* X1M0 f6 */
-        sbcIndirectLongy16, /* X1M0 f7 */
-        sed,                /* X1M0 f8 */
-        sbcAbsy16,          /* X1M0 f9 */
-        plx8,               /* X1M0 fa */
-        xce,                /* X1M0 fb */
-        jsrIndx,            /* X1M0 fc */
-        sbcAbsx16,          /* X1M0 fd */
-        incAbsx16,          /* X1M0 fe */
-        sbcLongx16,         /* X1M0 ff */
-    },
-    {
-        op_brk,             /* X0M1 00 */
-        oraIndirectx8,      /* X0M1 01 */
-        cop,                /* X0M1 02 */
-        oraSp8,             /* X0M1 03 */
-        tsbZp8,             /* X0M1 04 */
-        oraZp8,             /* X0M1 05 */
-        aslZp8,             /* X0M1 06 */
-        oraIndirectLong8,   /* X0M1 07 */
-        php,                /* X0M1 08 */
-        oraImm8,            /* X0M1 09 */
-        asla8,              /* X0M1 0a */
-        phd,                /* X0M1 0b */
-        tsbAbs8,            /* X0M1 0c */
-        oraAbs8,            /* X0M1 0d */
-        aslAbs8,            /* X0M1 0e */
-        oraLong8,           /* X0M1 0f */
-        bpl,                /* X0M1 10 */
-        oraIndirecty8,      /* X0M1 11 */
-        oraIndirect8,       /* X0M1 12 */
-        orasIndirecty8,     /* X0M1 13 */
-        trbZp8,             /* X0M1 14 */
-        oraZpx8,            /* X0M1 15 */
-        aslZpx8,            /* X0M1 16 */
-        oraIndirectLongy8,  /* X0M1 17 */
-        clc,                /* X0M1 18 */
-        oraAbsy8,           /* X0M1 19 */
-        inca8,              /* X0M1 1a */
-        tcs,                /* X0M1 1b */
-        trbAbs8,            /* X0M1 1c */
-        oraAbsx8,           /* X0M1 1d */
-        aslAbsx8,           /* X0M1 1e */
-        oraLongx8,          /* X0M1 1f */
-        jsr,                /* X0M1 20 */
-        andIndirectx8,      /* X0M1 21 */
-        jsl,                /* X0M1 22 */
-        andSp8,             /* X0M1 23 */
-        bitZp8,             /* X0M1 24 */
-        andZp8,             /* X0M1 25 */
-        rolZp8,             /* X0M1 26 */
-        andIndirectLong8,   /* X0M1 27 */
-        plp,                /* X0M1 28 */
-        andImm8,            /* X0M1 29 */
-        rola8,              /* X0M1 2a */
-        pld,                /* X0M1 2b */
-        bitAbs8,            /* X0M1 2c */
-        andAbs8,            /* X0M1 2d */
-        rolAbs8,            /* X0M1 2e */
-        andLong8,           /* X0M1 2f */
-        bmi,                /* X0M1 30 */
-        andIndirecty8,      /* X0M1 31 */
-        andIndirect8,       /* X0M1 32 */
-        andsIndirecty8,     /* X0M1 33 */
-        bitZpx8,            /* X0M1 34 */
-        andZpx8,            /* X0M1 35 */
-        rolZpx8,            /* X0M1 36 */
-        andIndirectLongy8,  /* X0M1 37 */
-        sec,                /* X0M1 38 */
-        andAbsy8,           /* X0M1 39 */
-        deca8,              /* X0M1 3a */
-        tsc,                /* X0M1 3b */
-        bitAbsx8,           /* X0M1 3c */
-        andAbsx8,           /* X0M1 3d */
-        rolAbsx8,           /* X0M1 3e */
-        andLongx8,          /* X0M1 3f */
-        rti,                /* X0M1 40 */
-        eorIndirectx8,      /* X0M1 41 */
-        wdm,                /* X0M1 42 */
-        eorSp8,             /* X0M1 43 */
-        mvp,                /* X0M1 44 */
-        eorZp8,             /* X0M1 45 */
-        lsrZp8,             /* X0M1 46 */
-        eorIndirectLong8,   /* X0M1 47 */
-        pha8,               /* X0M1 48 */
-        eorImm8,            /* X0M1 49 */
-        lsra8,              /* X0M1 4a */
-        phk,                /* X0M1 4b */
-        jmp,                /* X0M1 4c */
-        eorAbs8,            /* X0M1 4d */
-        lsrAbs8,            /* X0M1 4e */
-        eorLong8,           /* X0M1 4f */
-        bvc,                /* X0M1 50 */
-        eorIndirecty8,      /* X0M1 51 */
-        eorIndirect8,       /* X0M1 52 */
-        eorsIndirecty8,     /* X0M1 53 */
-        mvn,                /* X0M1 54 */
-        eorZpx8,            /* X0M1 55 */
-        lsrZpx8,            /* X0M1 56 */
-        eorIndirectLongy8,  /* X0M1 57 */
-        cli,                /* X0M1 58 */
-        eorAbsy8,           /* X0M1 59 */
-        phy16,              /* X0M1 5a */
-        tcd,                /* X0M1 5b */
-        jmplong,            /* X0M1 5c */
-        eorAbsx8,           /* X0M1 5d */
-        lsrAbsx8,           /* X0M1 5e */
-        eorLongx8,          /* X0M1 5f */
-        rts,                /* X0M1 60 */
-        adcIndirectx8,      /* X0M1 61 */
-        per,                /* X0M1 62 */
-        adcSp8,             /* X0M1 63 */
-        stzZp8,             /* X0M1 64 */
-        adcZp8,             /* X0M1 65 */
-        rorZp8,             /* X0M1 66 */
-        adcIndirectLong8,   /* X0M1 67 */
-        pla8,               /* X0M1 68 */
-        adcImm8,            /* X0M1 69 */
-        rora8,              /* X0M1 6a */
-        rtl,                /* X0M1 6b */
-        jmpind,             /* X0M1 6c */
-        adcAbs8,            /* X0M1 6d */
-        rorAbs8,            /* X0M1 6e */
-        adcLong8,           /* X0M1 6f */
-        bvs,                /* X0M1 70 */
-        adcIndirecty8,      /* X0M1 71 */
-        adcIndirect8,       /* X0M1 72 */
-        adcsIndirecty8,     /* X0M1 73 */
-        stzZpx8,            /* X0M1 74 */
-        adcZpx8,            /* X0M1 75 */
-        rorZpx8,            /* X0M1 76 */
-        adcIndirectLongy8,  /* X0M1 77 */
-        sei,                /* X0M1 78 */
-        adcAbsy8,           /* X0M1 79 */
-        ply16,              /* X0M1 7a */
-        tdc,                /* X0M1 7b */
-        jmpindx,            /* X0M1 7c */
-        adcAbsx8,           /* X0M1 7d */
-        rorAbsx8,           /* X0M1 7e */
-        adcLongx8,          /* X0M1 7f */
-        bra,                /* X0M1 80 */
-        staIndirectx8,      /* X0M1 81 */
-        brl,                /* X0M1 82 */
-        staSp8,             /* X0M1 83 */
-        styZp16,            /* X0M1 84 */
-        staZp8,             /* X0M1 85 */
-        stxZp16,            /* X0M1 86 */
-        staIndirectLong8,   /* X0M1 87 */
-        dey16,              /* X0M1 88 */
-        bitImm8,            /* X0M1 89 */
-        txa8,               /* X0M1 8a */
-        phb,                /* X0M1 8b */
-        styAbs16,           /* X0M1 8c */
-        staAbs8,            /* X0M1 8d */
-        stxAbs16,           /* X0M1 8e */
-        staLong8,           /* X0M1 8f */
-        bcc,                /* X0M1 90 */
-        staIndirecty8,      /* X0M1 91 */
-        staIndirect8,       /* X0M1 92 */
-        staSIndirecty8,     /* X0M1 93 */
-        styZpx16,           /* X0M1 94 */
-        staZpx8,            /* X0M1 95 */
-        stxZpy16,           /* X0M1 96 */
-        staIndirectLongy8,  /* X0M1 97 */
-        tya8,               /* X0M1 98 */
-        staAbsy8,           /* X0M1 99 */
-        txs16,              /* X0M1 9a */
-        txy16,              /* X0M1 9b */
-        stzAbs8,            /* X0M1 9c */
-        staAbsx8,           /* X0M1 9d */
-        stzAbsx8,           /* X0M1 9e */
-        staLongx8,          /* X0M1 9f */
-        ldyImm16,           /* X0M1 a0 */
-        ldaIndirectx8,      /* X0M1 a1 */
-        ldxImm16,           /* X0M1 a2 */
-        ldaSp8,             /* X0M1 a3 */
-        ldyZp16,            /* X0M1 a4 */
-        ldaZp8,             /* X0M1 a5 */
-        ldxZp16,            /* X0M1 a6 */
-        ldaIndirectLong8,   /* X0M1 a7 */
-        tay16,              /* X0M1 a8 */
-        ldaImm8,            /* X0M1 a9 */
-        tax16,              /* X0M1 aa */
-        plb,                /* X0M1 ab */
-        ldyAbs16,           /* X0M1 ac */
-        ldaAbs8,            /* X0M1 ad */
-        ldxAbs16,           /* X0M1 ae */
-        ldaLong8,           /* X0M1 af */
-        bcs,                /* X0M1 b0 */
-        ldaIndirecty8,      /* X0M1 b1 */
-        ldaIndirect8,       /* X0M1 b2 */
-        ldaSIndirecty8,     /* X0M1 b3 */
-        ldyZpx16,           /* X0M1 b4 */
-        ldaZpx8,            /* X0M1 b5 */
-        ldxZpy16,           /* X0M1 b6 */
-        ldaIndirectLongy8,  /* X0M1 b7 */
-        clv,                /* X0M1 b8 */
-        ldaAbsy8,           /* X0M1 b9 */
-        tsx16,              /* X0M1 ba */
-        tyx16,              /* X0M1 bb */
-        ldyAbsx16,          /* X0M1 bc */
-        ldaAbsx8,           /* X0M1 bd */
-        ldxAbsy16,          /* X0M1 be */
-        ldaLongx8,          /* X0M1 bf */
-        cpyImm16,           /* X0M1 c0 */
-        cmpIndirectx8,      /* X0M1 c1 */
-        rep65816,           /* X0M1 c2 */
-        cmpSp8,             /* X0M1 c3 */
-        cpyZp16,            /* X0M1 c4 */
-        cmpZp8,             /* X0M1 c5 */
-        decZp8,             /* X0M1 c6 */
-        cmpIndirectLong8,   /* X0M1 c7 */
-        iny16,              /* X0M1 c8 */
-        cmpImm8,            /* X0M1 c9 */
-        dex16,              /* X0M1 ca */
-        wai,                /* X0M1 cb */
-        cpyAbs16,           /* X0M1 cc */
-        cmpAbs8,            /* X0M1 cd */
-        decAbs8,            /* X0M1 ce */
-        cmpLong8,           /* X0M1 cf */
-        bne,                /* X0M1 d0 */
-        cmpIndirecty8,      /* X0M1 d1 */
-        cmpIndirect8,       /* X0M1 d2 */
-        cmpsIndirecty8,     /* X0M1 d3 */
-        pei,                /* X0M1 d4 */
-        cmpZpx8,            /* X0M1 d5 */
-        decZpx8,            /* X0M1 d6 */
-        cmpIndirectLongy8,  /* X0M1 d7 */
-        cld,                /* X0M1 d8 */
-        cmpAbsy8,           /* X0M1 d9 */
-        phx16,              /* X0M1 da */
-        stp,                /* X0M1 db */
-        jmlind,             /* X0M1 dc */
-        cmpAbsx8,           /* X0M1 dd */
-        decAbsx8,           /* X0M1 de */
-        cmpLongx8,          /* X0M1 df */
-        cpxImm16,           /* X0M1 e0 */
-        sbcIndirectx8,      /* X0M1 e1 */
-        sep,                /* X0M1 e2 */
-        sbcSp8,             /* X0M1 e3 */
-        cpxZp16,            /* X0M1 e4 */
-        sbcZp8,             /* X0M1 e5 */
-        incZp8,             /* X0M1 e6 */
-        sbcIndirectLong8,   /* X0M1 e7 */
-        inx16,              /* X0M1 e8 */
-        sbcImm8,            /* X0M1 e9 */
-        nop,                /* X0M1 ea */
-        xba,                /* X0M1 eb */
-        cpxAbs16,           /* X0M1 ec */
-        sbcAbs8,            /* X0M1 ed */
-        incAbs8,            /* X0M1 ee */
-        sbcLong8,           /* X0M1 ef */
-        beq,                /* X0M1 f0 */
-        sbcIndirecty8,      /* X0M1 f1 */
-        sbcIndirect8,       /* X0M1 f2 */
-        sbcsIndirecty8,     /* X0M1 f3 */
-        pea,                /* X0M1 f4 */
-        sbcZpx8,            /* X0M1 f5 */
-        incZpx8,            /* X0M1 f6 */
-        sbcIndirectLongy8,  /* X0M1 f7 */
-        sed,                /* X0M1 f8 */
-        sbcAbsy8,           /* X0M1 f9 */
-        plx16,              /* X0M1 fa */
-        xce,                /* X0M1 fb */
-        jsrIndx,            /* X0M1 fc */
-        sbcAbsx8,           /* X0M1 fd */
-        incAbsx8,           /* X0M1 fe */
-        sbcLongx8,          /* X0M1 ff */
-    },
-    {
-        op_brk,             /* X0M0 00 */
-        oraIndirectx16,     /* X0M0 01 */
-        cop,                /* X0M0 02 */
-        oraSp16,            /* X0M0 03 */
-        tsbZp16,            /* X0M0 04 */
-        oraZp16,            /* X0M0 05 */
-        aslZp16,            /* X0M0 06 */
-        oraIndirectLong16,  /* X0M0 07 */
-        php,                /* X0M0 08 */
-        oraImm16,           /* X0M0 09 */
-        asla16,             /* X0M0 0a */
-        phd,                /* X0M0 0b */
-        tsbAbs16,           /* X0M0 0c */
-        oraAbs16,           /* X0M0 0d */
-        aslAbs16,           /* X0M0 0e */
-        oraLong16,          /* X0M0 0f */
-        bpl,                /* X0M0 10 */
-        oraIndirecty16,     /* X0M0 11 */
-        oraIndirect16,      /* X0M0 12 */
-        orasIndirecty16,    /* X0M0 13 */
-        trbZp16,            /* X0M0 14 */
-        oraZpx16,           /* X0M0 15 */
-        aslZpx16,           /* X0M0 16 */
-        oraIndirectLongy16, /* X0M0 17 */
-        clc,                /* X0M0 18 */
-        oraAbsy16,          /* X0M0 19 */
-        inca16,             /* X0M0 1a */
-        tcs,                /* X0M0 1b */
-        trbAbs16,           /* X0M0 1c */
-        oraAbsx16,          /* X0M0 1d */
-        aslAbsx16,          /* X0M0 1e */
-        oraLongx16,         /* X0M0 1f */
-        jsr,                /* X0M0 20 */
-        andIndirectx16,     /* X0M0 21 */
-        jsl,                /* X0M0 22 */
-        andSp16,            /* X0M0 23 */
-        bitZp16,            /* X0M0 24 */
-        andZp16,            /* X0M0 25 */
-        rolZp16,            /* X0M0 26 */
-        andIndirectLong16,  /* X0M0 27 */
-        plp,                /* X0M0 28 */
-        andImm16,           /* X0M0 29 */
-        rola16,             /* X0M0 2a */
-        pld,                /* X0M0 2b */
-        bitAbs16,           /* X0M0 2c */
-        andAbs16,           /* X0M0 2d */
-        rolAbs16,           /* X0M0 2e */
-        andLong16,          /* X0M0 2f */
-        bmi,                /* X0M0 30 */
-        andIndirecty16,     /* X0M0 31 */
-        andIndirect16,      /* X0M0 32 */
-        andsIndirecty16,    /* X0M0 33 */
-        bitZpx16,           /* X0M0 34 */
-        andZpx16,           /* X0M0 35 */
-        rolZpx16,           /* X0M0 36 */
-        andIndirectLongy16, /* X0M0 37 */
-        sec,                /* X0M0 38 */
-        andAbsy16,          /* X0M0 39 */
-        deca16,             /* X0M0 3a */
-        tsc,                /* X0M0 3b */
-        bitAbsx16,          /* X0M0 3c */
-        andAbsx16,          /* X0M0 3d */
-        rolAbsx16,          /* X0M0 3e */
-        andLongx16,         /* X0M0 3f */
-        rti,                /* X0M0 40 */
-        eorIndirectx16,     /* X0M0 41 */
-        wdm,                /* X0M0 42 */
-        eorSp16,            /* X0M0 43 */
-        mvp,                /* X0M0 44 */
-        eorZp16,            /* X0M0 45 */
-        lsrZp16,            /* X0M0 46 */
-        eorIndirectLong16,  /* X0M0 47 */
-        pha16,              /* X0M0 48 */
-        eorImm16,           /* X0M0 49 */
-        lsra16,             /* X0M0 4a */
-        phk,                /* X0M0 4b */
-        jmp,                /* X0M0 4c */
-        eorAbs16,           /* X0M0 4d */
-        lsrAbs16,           /* X0M0 4e */
-        eorLong16,          /* X0M0 4f */
-        bvc,                /* X0M0 50 */
-        eorIndirecty16,     /* X0M0 51 */
-        eorIndirect16,      /* X0M0 52 */
-        eorsIndirecty16,    /* X0M0 53 */
-        mvn,                /* X0M0 54 */
-        eorZpx16,           /* X0M0 55 */
-        lsrZpx16,           /* X0M0 56 */
-        eorIndirectLongy16, /* X0M0 57 */
-        cli,                /* X0M0 58 */
-        eorAbsy16,          /* X0M0 59 */
-        phy16,              /* X0M0 5a */
-        tcd,                /* X0M0 5b */
-        jmplong,            /* X0M0 5c */
-        eorAbsx16,          /* X0M0 5d */
-        lsrAbsx16,          /* X0M0 5e */
-        eorLongx16,         /* X0M0 5f */
-        rts,                /* X0M0 60 */
-        adcIndirectx16,     /* X0M0 61 */
-        per,                /* X0M0 62 */
-        adcSp16,            /* X0M0 63 */
-        stzZp16,            /* X0M0 64 */
-        adcZp16,            /* X0M0 65 */
-        rorZp16,            /* X0M0 66 */
-        adcIndirectLong16,  /* X0M0 67 */
-        pla16,              /* X0M0 68 */
-        adcImm16,           /* X0M0 69 */
-        rora16,             /* X0M0 6a */
-        rtl,                /* X0M0 6b */
-        jmpind,             /* X0M0 6c */
-        adcAbs16,           /* X0M0 6d */
-        rorAbs16,           /* X0M0 6e */
-        adcLong16,          /* X0M0 6f */
-        bvs,                /* X0M0 70 */
-        adcIndirecty16,     /* X0M0 71 */
-        adcIndirect16,      /* X0M0 72 */
-        adcsIndirecty16,    /* X0M0 73 */
-        stzZpx16,           /* X0M0 74 */
-        adcZpx16,           /* X0M0 75 */
-        rorZpx16,           /* X0M0 76 */
-        adcIndirectLongy16, /* X0M0 77 */
-        sei,                /* X0M0 78 */
-        adcAbsy16,          /* X0M0 79 */
-        ply16,              /* X0M0 7a */
-        tdc,                /* X0M0 7b */
-        jmpindx,            /* X0M0 7c */
-        adcAbsx16,          /* X0M0 7d */
-        rorAbsx16,          /* X0M0 7e */
-        adcLongx16,         /* X0M0 7f */
-        bra,                /* X0M0 80 */
-        staIndirectx16,     /* X0M0 81 */
-        brl,                /* X0M0 82 */
-        staSp16,            /* X0M0 83 */
-        styZp16,            /* X0M0 84 */
-        staZp16,            /* X0M0 85 */
-        stxZp16,            /* X0M0 86 */
-        staIndirectLong16,  /* X0M0 87 */
-        dey16,              /* X0M0 88 */
-        bitImm16,           /* X0M0 89 */
-        txa16,              /* X0M0 8a */
-        phb,                /* X0M0 8b */
-        styAbs16,           /* X0M0 8c */
-        staAbs16,           /* X0M0 8d */
-        stxAbs16,           /* X0M0 8e */
-        staLong16,          /* X0M0 8f */
-        bcc,                /* X0M0 90 */
-        staIndirecty16,     /* X0M0 91 */
-        staIndirect16,      /* X0M0 92 */
-        staSIndirecty16,    /* X0M0 93 */
-        styZpx16,           /* X0M0 94 */
-        staZpx16,           /* X0M0 95 */
-        stxZpy16,           /* X0M0 96 */
-        staIndirectLongy16, /* X0M0 97 */
-        tya16,              /* X0M0 98 */
-        staAbsy16,          /* X0M0 99 */
-        txs16,              /* X0M0 9a */
-        txy16,              /* X0M0 9b */
-        stzAbs16,           /* X0M0 9c */
-        staAbsx16,          /* X0M0 9d */
-        stzAbsx16,          /* X0M0 9e */
-        staLongx16,         /* X0M0 9f */
-        ldyImm16,           /* X0M0 a0 */
-        ldaIndirectx16,     /* X0M0 a1 */
-        ldxImm16,           /* X0M0 a2 */
-        ldaSp16,            /* X0M0 a3 */
-        ldyZp16,            /* X0M0 a4 */
-        ldaZp16,            /* X0M0 a5 */
-        ldxZp16,            /* X0M0 a6 */
-        ldaIndirectLong16,  /* X0M0 a7 */
-        tay16,              /* X0M0 a8 */
-        ldaImm16,           /* X0M0 a9 */
-        tax16,              /* X0M0 aa */
-        plb,                /* X0M0 ab */
-        ldyAbs16,           /* X0M0 ac */
-        ldaAbs16,           /* X0M0 ad */
-        ldxAbs16,           /* X0M0 ae */
-        ldaLong16,          /* X0M0 af */
-        bcs,                /* X0M0 b0 */
-        ldaIndirecty16,     /* X0M0 b1 */
-        ldaIndirect16,      /* X0M0 b2 */
-        ldaSIndirecty16,    /* X0M0 b3 */
-        ldyZpx16,           /* X0M0 b4 */
-        ldaZpx16,           /* X0M0 b5 */
-        ldxZpy16,           /* X0M0 b6 */
-        ldaIndirectLongy16, /* X0M0 b7 */
-        clv,                /* X0M0 b8 */
-        ldaAbsy16,          /* X0M0 b9 */
-        tsx16,              /* X0M0 ba */
-        tyx16,              /* X0M0 bb */
-        ldyAbsx16,          /* X0M0 bc */
-        ldaAbsx16,          /* X0M0 bd */
-        ldxAbsy16,          /* X0M0 be */
-        ldaLongx16,         /* X0M0 bf */
-        cpyImm16,           /* X0M0 c0 */
-        cmpIndirectx16,     /* X0M0 c1 */
-        rep65816,           /* X0M0 c2 */
-        cmpSp16,            /* X0M0 c3 */
-        cpyZp16,            /* X0M0 c4 */
-        cmpZp16,            /* X0M0 c5 */
-        decZp16,            /* X0M0 c6 */
-        cmpIndirectLong16,  /* X0M0 c7 */
-        iny16,              /* X0M0 c8 */
-        cmpImm16,           /* X0M0 c9 */
-        dex16,              /* X0M0 ca */
-        wai,                /* X0M0 cb */
-        cpyAbs16,           /* X0M0 cc */
-        cmpAbs16,           /* X0M0 cd */
-        decAbs16,           /* X0M0 ce */
-        cmpLong16,          /* X0M0 cf */
-        bne,                /* X0M0 d0 */
-        cmpIndirecty16,     /* X0M0 d1 */
-        cmpIndirect16,      /* X0M0 d2 */
-        cmpsIndirecty16,    /* X0M0 d3 */
-        pei,                /* X0M0 d4 */
-        cmpZpx16,           /* X0M0 d5 */
-        decZpx16,           /* X0M0 d6 */
-        cmpIndirectLongy16, /* X0M0 d7 */
-        cld,                /* X0M0 d8 */
-        cmpAbsy16,          /* X0M0 d9 */
-        phx16,              /* X0M0 da */
-        stp,                /* X0M0 db */
-        jmlind,             /* X0M0 dc */
-        cmpAbsx16,          /* X0M0 dd */
-        decAbsx16,          /* X0M0 de */
-        cmpLongx16,         /* X0M0 df */
-        cpxImm16,           /* X0M0 e0 */
-        sbcIndirectx16,     /* X0M0 e1 */
-        sep,                /* X0M0 e2 */
-        sbcSp16,            /* X0M0 e3 */
-        cpxZp16,            /* X0M0 e4 */
-        sbcZp16,            /* X0M0 e5 */
-        incZp16,            /* X0M0 e6 */
-        sbcIndirectLong16,  /* X0M0 e7 */
-        inx16,              /* X0M0 e8 */
-        sbcImm16,           /* X0M0 e9 */
-        nop,                /* X0M0 ea */
-        xba,                /* X0M0 eb */
-        cpxAbs16,           /* X0M0 ec */
-        sbcAbs16,           /* X0M0 ed */
-        incAbs16,           /* X0M0 ee */
-        sbcLong16,          /* X0M0 ef */
-        beq,                /* X0M0 f0 */
-        sbcIndirecty16,     /* X0M0 f1 */
-        sbcIndirect16,      /* X0M0 f2 */
-        sbcsIndirecty16,    /* X0M0 f3 */
-        pea,                /* X0M0 f4 */
-        sbcZpx16,           /* X0M0 f5 */
-        incZpx16,           /* X0M0 f6 */
-        sbcIndirectLongy16, /* X0M0 f7 */
-        sed,                /* X0M0 f8 */
-        sbcAbsy16,          /* X0M0 f9 */
-        plx16,              /* X0M0 fa */
-        xce,                /* X0M0 fb */
-        jsrIndx,            /* X0M0 fc */
-        sbcAbsx16,          /* X0M0 fd */
-        incAbsx16,          /* X0M0 fe */
-        sbcLongx16,         /* X0M0 ff */
-    },
-    {
-        brkE,               /* EMUL 00 */
-        oraIndirectxE,      /* EMUL 01 */
-        cope,               /* EMUL 02 */
-        oraSp8,             /* EMUL 03 */
-        tsbZp8,             /* EMUL 04 */
-        oraZp8,             /* EMUL 05 */
-        aslZp8,             /* EMUL 06 */
-        oraIndirectLong8,   /* EMUL 07 */
-        phpE,               /* EMUL 08 */
-        oraImm8,            /* EMUL 09 */
-        asla8,              /* EMUL 0a */
-        phd,                /* EMUL 0b */
-        tsbAbs8,            /* EMUL 0c */
-        oraAbs8,            /* EMUL 0d */
-        aslAbs8,            /* EMUL 0e */
-        oraLong8,           /* EMUL 0f */
-        bpl,                /* EMUL 10 */
-        oraIndirectyE,      /* EMUL 11 */
-        oraIndirect8,       /* EMUL 12 */
-        orasIndirecty8,     /* EMUL 13 */
-        trbZp8,             /* EMUL 14 */
-        oraZpx8,            /* EMUL 15 */
-        aslZpx8,            /* EMUL 16 */
-        oraIndirectLongy8,  /* EMUL 17 */
-        clc,                /* EMUL 18 */
-        oraAbsy8,           /* EMUL 19 */
-        inca8,              /* EMUL 1a */
-        tcs,                /* EMUL 1b */
-        trbAbs8,            /* EMUL 1c */
-        oraAbsx8,           /* EMUL 1d */
-        aslAbsx8,           /* EMUL 1e */
-        oraLongx8,          /* EMUL 1f */
-        jsrE,               /* EMUL 20 */
-        andIndirectxE,      /* EMUL 21 */
-        jslE,               /* EMUL 22 */
-        andSp8,             /* EMUL 23 */
-        bitZp8,             /* EMUL 24 */
-        andZp8,             /* EMUL 25 */
-        rolZp8,             /* EMUL 26 */
-        andIndirectLong8,   /* EMUL 27 */
-        plpE,               /* EMUL 28 */
-        andImm8,            /* EMUL 29 */
-        rola8,              /* EMUL 2a */
-        pld,                /* EMUL 2b */
-        bitAbs8,            /* EMUL 2c */
-        andAbs8,            /* EMUL 2d */
-        rolAbs8,            /* EMUL 2e */
-        andLong8,           /* EMUL 2f */
-        bmi,                /* EMUL 30 */
-        andIndirectyE,      /* EMUL 31 */
-        andIndirect8,       /* EMUL 32 */
-        andsIndirecty8,     /* EMUL 33 */
-        bitZpx8,            /* EMUL 34 */
-        andZpx8,            /* EMUL 35 */
-        rolZpx8,            /* EMUL 36 */
-        andIndirectLongy8,  /* EMUL 37 */
-        sec,                /* EMUL 38 */
-        andAbsy8,           /* EMUL 39 */
-        deca8,              /* EMUL 3a */
-        tsc,                /* EMUL 3b */
-        bitAbsx8,           /* EMUL 3c */
-        andAbsx8,           /* EMUL 3d */
-        rolAbsx8,           /* EMUL 3e */
-        andLongx8,          /* EMUL 3f */
-        rtiE,               /* EMUL 40 */
-        eorIndirectxE,      /* EMUL 41 */
-        wdm,                /* EMUL 42 */
-        eorSp8,             /* EMUL 43 */
-        mvp,                /* EMUL 44 */
-        eorZp8,             /* EMUL 45 */
-        lsrZp8,             /* EMUL 46 */
-        eorIndirectLong8,   /* EMUL 47 */
-        phaE,               /* EMUL 48 */
-        eorImm8,            /* EMUL 49 */
-        lsra8,              /* EMUL 4a */
-        phke,               /* EMUL 4b */
-        jmp,                /* EMUL 4c */
-        eorAbs8,            /* EMUL 4d */
-        lsrAbs8,            /* EMUL 4e */
-        eorLong8,           /* EMUL 4f */
-        bvc,                /* EMUL 50 */
-        eorIndirectyE,      /* EMUL 51 */
-        eorIndirect8,       /* EMUL 52 */
-        eorsIndirecty8,     /* EMUL 53 */
-        mvn,                /* EMUL 54 */
-        eorZpx8,            /* EMUL 55 */
-        lsrZpx8,            /* EMUL 56 */
-        eorIndirectLongy8,  /* EMUL 57 */
-        cli,                /* EMUL 58 */
-        eorAbsy8,           /* EMUL 59 */
-        phyE,               /* EMUL 5a */
-        tcd,                /* EMUL 5b */
-        jmplong,            /* EMUL 5c */
-        eorAbsx8,           /* EMUL 5d */
-        lsrAbsx8,           /* EMUL 5e */
-        eorLongx8,          /* EMUL 5f */
-        rtsE,               /* EMUL 60 */
-        adcIndirectxE,      /* EMUL 61 */
-        per,                /* EMUL 62 */
-        adcSp8,             /* EMUL 63 */
-        stzZp8,             /* EMUL 64 */
-        adcZp8,             /* EMUL 65 */
-        rorZp8,             /* EMUL 66 */
-        adcIndirectLong8,   /* EMUL 67 */
-        plaE,               /* EMUL 68 */
-        adcImm8,            /* EMUL 69 */
-        rora8,              /* EMUL 6a */
-        rtlE,               /* EMUL 6b */
-        jmpind,             /* EMUL 6c */
-        adcAbs8,            /* EMUL 6d */
-        rorAbs8,            /* EMUL 6e */
-        adcLong8,           /* EMUL 6f */
-        bvs,                /* EMUL 70 */
-        adcIndirectyE,      /* EMUL 71 */
-        adcIndirect8,       /* EMUL 72 */
-        adcsIndirecty8,     /* EMUL 73 */
-        stzZpx8,            /* EMUL 74 */
-        adcZpx8,            /* EMUL 75 */
-        rorZpx8,            /* EMUL 76 */
-        adcIndirectLongy8,  /* EMUL 77 */
-        sei,                /* EMUL 78 */
-        adcAbsy8,           /* EMUL 79 */
-        plyE,               /* EMUL 7a */
-        tdc,                /* EMUL 7b */
-        jmpindx,            /* EMUL 7c */
-        adcAbsx8,           /* EMUL 7d */
-        rorAbsx8,           /* EMUL 7e */
-        adcLongx8,          /* EMUL 7f */
-        bra,                /* EMUL 80 */
-        staIndirectxE,      /* EMUL 81 */
-        brl,                /* EMUL 82 */
-        staSp8,             /* EMUL 83 */
-        styZp8,             /* EMUL 84 */
-        staZp8,             /* EMUL 85 */
-        stxZp8,             /* EMUL 86 */
-        staIndirectLong8,   /* EMUL 87 */
-        dey8,               /* EMUL 88 */
-        bitImm8,            /* EMUL 89 */
-        txa8,               /* EMUL 8a */
-        phbe,               /* EMUL 8b */
-        styAbs8,            /* EMUL 8c */
-        staAbs8,            /* EMUL 8d */
-        stxAbs8,            /* EMUL 8e */
-        staLong8,           /* EMUL 8f */
-        bcc,                /* EMUL 90 */
-        staIndirectyE,      /* EMUL 91 */
-        staIndirect8,       /* EMUL 92 */
-        staSIndirecty8,     /* EMUL 93 */
-        styZpx8,            /* EMUL 94 */
-        staZpx8,            /* EMUL 95 */
-        stxZpy8,            /* EMUL 96 */
-        staIndirectLongy8,  /* EMUL 97 */
-        tya8,               /* EMUL 98 */
-        staAbsy8,           /* EMUL 99 */
-        txs8,               /* EMUL 9a */
-        txy8,               /* EMUL 9b */
-        stzAbs8,            /* EMUL 9c */
-        staAbsx8,           /* EMUL 9d */
-        stzAbsx8,           /* EMUL 9e */
-        staLongx8,          /* EMUL 9f */
-        ldyImm8,            /* EMUL a0 */
-        ldaIndirectxE,      /* EMUL a1 */
-        ldxImm8,            /* EMUL a2 */
-        ldaSp8,             /* EMUL a3 */
-        ldyZp8,             /* EMUL a4 */
-        ldaZp8,             /* EMUL a5 */
-        ldxZp8,             /* EMUL a6 */
-        ldaIndirectLong8,   /* EMUL a7 */
-        tay8,               /* EMUL a8 */
-        ldaImm8,            /* EMUL a9 */
-        tax8,               /* EMUL aa */
-        plbe,               /* EMUL ab */
-        ldyAbs8,            /* EMUL ac */
-        ldaAbs8,            /* EMUL ad */
-        ldxAbs8,            /* EMUL ae */
-        ldaLong8,           /* EMUL af */
-        bcs,                /* EMUL b0 */
-        ldaIndirectyE,      /* EMUL b1 */
-        ldaIndirect8,       /* EMUL b2 */
-        ldaSIndirecty8,     /* EMUL b3 */
-        ldyZpx8,            /* EMUL b4 */
-        ldaZpx8,            /* EMUL b5 */
-        ldxZpy8,            /* EMUL b6 */
-        ldaIndirectLongy8,  /* EMUL b7 */
-        clv,                /* EMUL b8 */
-        ldaAbsy8,           /* EMUL b9 */
-        tsx8,               /* EMUL ba */
-        tyx8,               /* EMUL bb */
-        ldyAbsx8,           /* EMUL bc */
-        ldaAbsx8,           /* EMUL bd */
-        ldxAbsy8,           /* EMUL be */
-        ldaLongx8,          /* EMUL bf */
-        cpyImm8,            /* EMUL c0 */
-        cmpIndirectxE,      /* EMUL c1 */
-        rep65816,           /* EMUL c2 */
-        cmpSp8,             /* EMUL c3 */
-        cpyZp8,             /* EMUL c4 */
-        cmpZp8,             /* EMUL c5 */
-        decZp8,             /* EMUL c6 */
-        cmpIndirectLong8,   /* EMUL c7 */
-        iny8,               /* EMUL c8 */
-        cmpImm8,            /* EMUL c9 */
-        dex8,               /* EMUL ca */
-        wai,                /* EMUL cb */
-        cpyAbs8,            /* EMUL cc */
-        cmpAbs8,            /* EMUL cd */
-        decAbs8,            /* EMUL ce */
-        cmpLong8,           /* EMUL cf */
-        bne,                /* EMUL d0 */
-        cmpIndirectyE,      /* EMUL d1 */
-        cmpIndirect8,       /* EMUL d2 */
-        cmpsIndirecty8,     /* EMUL d3 */
-        pei,                /* EMUL d4 */
-        cmpZpx8,            /* EMUL d5 */
-        decZpx8,            /* EMUL d6 */
-        cmpIndirectLongy8,  /* EMUL d7 */
-        cld,                /* EMUL d8 */
-        cmpAbsy8,           /* EMUL d9 */
-        phxE,               /* EMUL da */
-        stp,                /* EMUL db */
-        jmlind,             /* EMUL dc */
-        cmpAbsx8,           /* EMUL dd */
-        decAbsx8,           /* EMUL de */
-        cmpLongx8,          /* EMUL df */
-        cpxImm8,            /* EMUL e0 */
-        sbcIndirectxE,      /* EMUL e1 */
-        sep,                /* EMUL e2 */
-        sbcSp8,             /* EMUL e3 */
-        cpxZp8,             /* EMUL e4 */
-        sbcZp8,             /* EMUL e5 */
-        incZp8,             /* EMUL e6 */
-        sbcIndirectLong8,   /* EMUL e7 */
-        inx8,               /* EMUL e8 */
-        sbcImm8,            /* EMUL e9 */
-        nop,                /* EMUL ea */
-        xba,                /* EMUL eb */
-        cpxAbs8,            /* EMUL ec */
-        sbcAbs8,            /* EMUL ed */
-        incAbs8,            /* EMUL ee */
-        sbcLong8,           /* EMUL ef */
-        beq,                /* EMUL f0 */
-        sbcIndirectyE,      /* EMUL f1 */
-        sbcIndirect8,       /* EMUL f2 */
-        sbcsIndirecty8,     /* EMUL f3 */
-        pea,                /* EMUL f4 */
-        sbcZpx8,            /* EMUL f5 */
-        incZpx8,            /* EMUL f6 */
-        sbcIndirectLongy8,  /* EMUL f7 */
-        sed,                /* EMUL f8 */
-        sbcAbsy8,           /* EMUL f9 */
-        plxE,               /* EMUL fa */
-        xce,                /* EMUL fb */
-        jsrIndxE,           /* EMUL fc */
-        sbcAbsx8,           /* EMUL fd */
-        incAbsx8,           /* EMUL fe */
-        sbcLongx8,          /* EMUL ff */
-    }
-};
+static void (*opcodes[5][256])() = {{
+                                        op_brk,            /* X1M1 00 */
+                                        oraIndirectx8,     /* X1M1 01 */
+                                        cop,               /* X1M1 02 */
+                                        oraSp8,            /* X1M1 03 */
+                                        tsbZp8,            /* X1M1 04 */
+                                        oraZp8,            /* X1M1 05 */
+                                        aslZp8,            /* X1M1 06 */
+                                        oraIndirectLong8,  /* X1M1 07 */
+                                        php,               /* X1M1 08 */
+                                        oraImm8,           /* X1M1 09 */
+                                        asla8,             /* X1M1 0a */
+                                        phd,               /* X1M1 0b */
+                                        tsbAbs8,           /* X1M1 0c */
+                                        oraAbs8,           /* X1M1 0d */
+                                        aslAbs8,           /* X1M1 0e */
+                                        oraLong8,          /* X1M1 0f */
+                                        bpl,               /* X1M1 10 */
+                                        oraIndirecty8,     /* X1M1 11 */
+                                        oraIndirect8,      /* X1M1 12 */
+                                        orasIndirecty8,    /* X1M1 13 */
+                                        trbZp8,            /* X1M1 14 */
+                                        oraZpx8,           /* X1M1 15 */
+                                        aslZpx8,           /* X1M1 16 */
+                                        oraIndirectLongy8, /* X1M1 17 */
+                                        clc,               /* X1M1 18 */
+                                        oraAbsy8,          /* X1M1 19 */
+                                        inca8,             /* X1M1 1a */
+                                        tcs,               /* X1M1 1b */
+                                        trbAbs8,           /* X1M1 1c */
+                                        oraAbsx8,          /* X1M1 1d */
+                                        aslAbsx8,          /* X1M1 1e */
+                                        oraLongx8,         /* X1M1 1f */
+                                        jsr,               /* X1M1 20 */
+                                        andIndirectx8,     /* X1M1 21 */
+                                        jsl,               /* X1M1 22 */
+                                        andSp8,            /* X1M1 23 */
+                                        bitZp8,            /* X1M1 24 */
+                                        andZp8,            /* X1M1 25 */
+                                        rolZp8,            /* X1M1 26 */
+                                        andIndirectLong8,  /* X1M1 27 */
+                                        plp,               /* X1M1 28 */
+                                        andImm8,           /* X1M1 29 */
+                                        rola8,             /* X1M1 2a */
+                                        pld,               /* X1M1 2b */
+                                        bitAbs8,           /* X1M1 2c */
+                                        andAbs8,           /* X1M1 2d */
+                                        rolAbs8,           /* X1M1 2e */
+                                        andLong8,          /* X1M1 2f */
+                                        bmi,               /* X1M1 30 */
+                                        andIndirecty8,     /* X1M1 31 */
+                                        andIndirect8,      /* X1M1 32 */
+                                        andsIndirecty8,    /* X1M1 33 */
+                                        bitZpx8,           /* X1M1 34 */
+                                        andZpx8,           /* X1M1 35 */
+                                        rolZpx8,           /* X1M1 36 */
+                                        andIndirectLongy8, /* X1M1 37 */
+                                        sec,               /* X1M1 38 */
+                                        andAbsy8,          /* X1M1 39 */
+                                        deca8,             /* X1M1 3a */
+                                        tsc,               /* X1M1 3b */
+                                        bitAbsx8,          /* X1M1 3c */
+                                        andAbsx8,          /* X1M1 3d */
+                                        rolAbsx8,          /* X1M1 3e */
+                                        andLongx8,         /* X1M1 3f */
+                                        rti,               /* X1M1 40 */
+                                        eorIndirectx8,     /* X1M1 41 */
+                                        wdm,               /* X1M1 42 */
+                                        eorSp8,            /* X1M1 43 */
+                                        mvp,               /* X1M1 44 */
+                                        eorZp8,            /* X1M1 45 */
+                                        lsrZp8,            /* X1M1 46 */
+                                        eorIndirectLong8,  /* X1M1 47 */
+                                        pha8,              /* X1M1 48 */
+                                        eorImm8,           /* X1M1 49 */
+                                        lsra8,             /* X1M1 4a */
+                                        phk,               /* X1M1 4b */
+                                        jmp,               /* X1M1 4c */
+                                        eorAbs8,           /* X1M1 4d */
+                                        lsrAbs8,           /* X1M1 4e */
+                                        eorLong8,          /* X1M1 4f */
+                                        bvc,               /* X1M1 50 */
+                                        eorIndirecty8,     /* X1M1 51 */
+                                        eorIndirect8,      /* X1M1 52 */
+                                        eorsIndirecty8,    /* X1M1 53 */
+                                        mvn,               /* X1M1 54 */
+                                        eorZpx8,           /* X1M1 55 */
+                                        lsrZpx8,           /* X1M1 56 */
+                                        eorIndirectLongy8, /* X1M1 57 */
+                                        cli,               /* X1M1 58 */
+                                        eorAbsy8,          /* X1M1 59 */
+                                        phy8,              /* X1M1 5a */
+                                        tcd,               /* X1M1 5b */
+                                        jmplong,           /* X1M1 5c */
+                                        eorAbsx8,          /* X1M1 5d */
+                                        lsrAbsx8,          /* X1M1 5e */
+                                        eorLongx8,         /* X1M1 5f */
+                                        rts,               /* X1M1 60 */
+                                        adcIndirectx8,     /* X1M1 61 */
+                                        per,               /* X1M1 62 */
+                                        adcSp8,            /* X1M1 63 */
+                                        stzZp8,            /* X1M1 64 */
+                                        adcZp8,            /* X1M1 65 */
+                                        rorZp8,            /* X1M1 66 */
+                                        adcIndirectLong8,  /* X1M1 67 */
+                                        pla8,              /* X1M1 68 */
+                                        adcImm8,           /* X1M1 69 */
+                                        rora8,             /* X1M1 6a */
+                                        rtl,               /* X1M1 6b */
+                                        jmpind,            /* X1M1 6c */
+                                        adcAbs8,           /* X1M1 6d */
+                                        rorAbs8,           /* X1M1 6e */
+                                        adcLong8,          /* X1M1 6f */
+                                        bvs,               /* X1M1 70 */
+                                        adcIndirecty8,     /* X1M1 71 */
+                                        adcIndirect8,      /* X1M1 72 */
+                                        adcsIndirecty8,    /* X1M1 73 */
+                                        stzZpx8,           /* X1M1 74 */
+                                        adcZpx8,           /* X1M1 75 */
+                                        rorZpx8,           /* X1M1 76 */
+                                        adcIndirectLongy8, /* X1M1 77 */
+                                        sei,               /* X1M1 78 */
+                                        adcAbsy8,          /* X1M1 79 */
+                                        ply8,              /* X1M1 7a */
+                                        tdc,               /* X1M1 7b */
+                                        jmpindx,           /* X1M1 7c */
+                                        adcAbsx8,          /* X1M1 7d */
+                                        rorAbsx8,          /* X1M1 7e */
+                                        adcLongx8,         /* X1M1 7f */
+                                        bra,               /* X1M1 80 */
+                                        staIndirectx8,     /* X1M1 81 */
+                                        brl,               /* X1M1 82 */
+                                        staSp8,            /* X1M1 83 */
+                                        styZp8,            /* X1M1 84 */
+                                        staZp8,            /* X1M1 85 */
+                                        stxZp8,            /* X1M1 86 */
+                                        staIndirectLong8,  /* X1M1 87 */
+                                        dey8,              /* X1M1 88 */
+                                        bitImm8,           /* X1M1 89 */
+                                        txa8,              /* X1M1 8a */
+                                        phb,               /* X1M1 8b */
+                                        styAbs8,           /* X1M1 8c */
+                                        staAbs8,           /* X1M1 8d */
+                                        stxAbs8,           /* X1M1 8e */
+                                        staLong8,          /* X1M1 8f */
+                                        bcc,               /* X1M1 90 */
+                                        staIndirecty8,     /* X1M1 91 */
+                                        staIndirect8,      /* X1M1 92 */
+                                        staSIndirecty8,    /* X1M1 93 */
+                                        styZpx8,           /* X1M1 94 */
+                                        staZpx8,           /* X1M1 95 */
+                                        stxZpy8,           /* X1M1 96 */
+                                        staIndirectLongy8, /* X1M1 97 */
+                                        tya8,              /* X1M1 98 */
+                                        staAbsy8,          /* X1M1 99 */
+                                        txs8,              /* X1M1 9a */
+                                        txy8,              /* X1M1 9b */
+                                        stzAbs8,           /* X1M1 9c */
+                                        staAbsx8,          /* X1M1 9d */
+                                        stzAbsx8,          /* X1M1 9e */
+                                        staLongx8,         /* X1M1 9f */
+                                        ldyImm8,           /* X1M1 a0 */
+                                        ldaIndirectx8,     /* X1M1 a1 */
+                                        ldxImm8,           /* X1M1 a2 */
+                                        ldaSp8,            /* X1M1 a3 */
+                                        ldyZp8,            /* X1M1 a4 */
+                                        ldaZp8,            /* X1M1 a5 */
+                                        ldxZp8,            /* X1M1 a6 */
+                                        ldaIndirectLong8,  /* X1M1 a7 */
+                                        tay8,              /* X1M1 a8 */
+                                        ldaImm8,           /* X1M1 a9 */
+                                        tax8,              /* X1M1 aa */
+                                        plb,               /* X1M1 ab */
+                                        ldyAbs8,           /* X1M1 ac */
+                                        ldaAbs8,           /* X1M1 ad */
+                                        ldxAbs8,           /* X1M1 ae */
+                                        ldaLong8,          /* X1M1 af */
+                                        bcs,               /* X1M1 b0 */
+                                        ldaIndirecty8,     /* X1M1 b1 */
+                                        ldaIndirect8,      /* X1M1 b2 */
+                                        ldaSIndirecty8,    /* X1M1 b3 */
+                                        ldyZpx8,           /* X1M1 b4 */
+                                        ldaZpx8,           /* X1M1 b5 */
+                                        ldxZpy8,           /* X1M1 b6 */
+                                        ldaIndirectLongy8, /* X1M1 b7 */
+                                        clv,               /* X1M1 b8 */
+                                        ldaAbsy8,          /* X1M1 b9 */
+                                        tsx8,              /* X1M1 ba */
+                                        tyx8,              /* X1M1 bb */
+                                        ldyAbsx8,          /* X1M1 bc */
+                                        ldaAbsx8,          /* X1M1 bd */
+                                        ldxAbsy8,          /* X1M1 be */
+                                        ldaLongx8,         /* X1M1 bf */
+                                        cpyImm8,           /* X1M1 c0 */
+                                        cmpIndirectx8,     /* X1M1 c1 */
+                                        rep65816,          /* X1M1 c2 */
+                                        cmpSp8,            /* X1M1 c3 */
+                                        cpyZp8,            /* X1M1 c4 */
+                                        cmpZp8,            /* X1M1 c5 */
+                                        decZp8,            /* X1M1 c6 */
+                                        cmpIndirectLong8,  /* X1M1 c7 */
+                                        iny8,              /* X1M1 c8 */
+                                        cmpImm8,           /* X1M1 c9 */
+                                        dex8,              /* X1M1 ca */
+                                        wai,               /* X1M1 cb */
+                                        cpyAbs8,           /* X1M1 cc */
+                                        cmpAbs8,           /* X1M1 cd */
+                                        decAbs8,           /* X1M1 ce */
+                                        cmpLong8,          /* X1M1 cf */
+                                        bne,               /* X1M1 d0 */
+                                        cmpIndirecty8,     /* X1M1 d1 */
+                                        cmpIndirect8,      /* X1M1 d2 */
+                                        cmpsIndirecty8,    /* X1M1 d3 */
+                                        pei,               /* X1M1 d4 */
+                                        cmpZpx8,           /* X1M1 d5 */
+                                        decZpx8,           /* X1M1 d6 */
+                                        cmpIndirectLongy8, /* X1M1 d7 */
+                                        cld,               /* X1M1 d8 */
+                                        cmpAbsy8,          /* X1M1 d9 */
+                                        phx8,              /* X1M1 da */
+                                        stp,               /* X1M1 db */
+                                        jmlind,            /* X1M1 dc */
+                                        cmpAbsx8,          /* X1M1 dd */
+                                        decAbsx8,          /* X1M1 de */
+                                        cmpLongx8,         /* X1M1 df */
+                                        cpxImm8,           /* X1M1 e0 */
+                                        sbcIndirectx8,     /* X1M1 e1 */
+                                        sep,               /* X1M1 e2 */
+                                        sbcSp8,            /* X1M1 e3 */
+                                        cpxZp8,            /* X1M1 e4 */
+                                        sbcZp8,            /* X1M1 e5 */
+                                        incZp8,            /* X1M1 e6 */
+                                        sbcIndirectLong8,  /* X1M1 e7 */
+                                        inx8,              /* X1M1 e8 */
+                                        sbcImm8,           /* X1M1 e9 */
+                                        nop,               /* X1M1 ea */
+                                        xba,               /* X1M1 eb */
+                                        cpxAbs8,           /* X1M1 ec */
+                                        sbcAbs8,           /* X1M1 ed */
+                                        incAbs8,           /* X1M1 ee */
+                                        sbcLong8,          /* X1M1 ef */
+                                        beq,               /* X1M1 f0 */
+                                        sbcIndirecty8,     /* X1M1 f1 */
+                                        sbcIndirect8,      /* X1M1 f2 */
+                                        sbcsIndirecty8,    /* X1M1 f3 */
+                                        pea,               /* X1M1 f4 */
+                                        sbcZpx8,           /* X1M1 f5 */
+                                        incZpx8,           /* X1M1 f6 */
+                                        sbcIndirectLongy8, /* X1M1 f7 */
+                                        sed,               /* X1M1 f8 */
+                                        sbcAbsy8,          /* X1M1 f9 */
+                                        plx8,              /* X1M1 fa */
+                                        xce,               /* X1M1 fb */
+                                        jsrIndx,           /* X1M1 fc */
+                                        sbcAbsx8,          /* X1M1 fd */
+                                        incAbsx8,          /* X1M1 fe */
+                                        sbcLongx8,         /* X1M1 ff */
+                                    },
+                                    {
+                                        op_brk,             /* X1M0 00 */
+                                        oraIndirectx16,     /* X1M0 01 */
+                                        cop,                /* X1M0 02 */
+                                        oraSp16,            /* X1M0 03 */
+                                        tsbZp16,            /* X1M0 04 */
+                                        oraZp16,            /* X1M0 05 */
+                                        aslZp16,            /* X1M0 06 */
+                                        oraIndirectLong16,  /* X1M0 07 */
+                                        php,                /* X1M0 08 */
+                                        oraImm16,           /* X1M0 09 */
+                                        asla16,             /* X1M0 0a */
+                                        phd,                /* X1M0 0b */
+                                        tsbAbs16,           /* X1M0 0c */
+                                        oraAbs16,           /* X1M0 0d */
+                                        aslAbs16,           /* X1M0 0e */
+                                        oraLong16,          /* X1M0 0f */
+                                        bpl,                /* X1M0 10 */
+                                        oraIndirecty16,     /* X1M0 11 */
+                                        oraIndirect16,      /* X1M0 12 */
+                                        orasIndirecty16,    /* X1M0 13 */
+                                        trbZp16,            /* X1M0 14 */
+                                        oraZpx16,           /* X1M0 15 */
+                                        aslZpx16,           /* X1M0 16 */
+                                        oraIndirectLongy16, /* X1M0 17 */
+                                        clc,                /* X1M0 18 */
+                                        oraAbsy16,          /* X1M0 19 */
+                                        inca16,             /* X1M0 1a */
+                                        tcs,                /* X1M0 1b */
+                                        trbAbs16,           /* X1M0 1c */
+                                        oraAbsx16,          /* X1M0 1d */
+                                        aslAbsx16,          /* X1M0 1e */
+                                        oraLongx16,         /* X1M0 1f */
+                                        jsr,                /* X1M0 20 */
+                                        andIndirectx16,     /* X1M0 21 */
+                                        jsl,                /* X1M0 22 */
+                                        andSp16,            /* X1M0 23 */
+                                        bitZp16,            /* X1M0 24 */
+                                        andZp16,            /* X1M0 25 */
+                                        rolZp16,            /* X1M0 26 */
+                                        andIndirectLong16,  /* X1M0 27 */
+                                        plp,                /* X1M0 28 */
+                                        andImm16,           /* X1M0 29 */
+                                        rola16,             /* X1M0 2a */
+                                        pld,                /* X1M0 2b */
+                                        bitAbs16,           /* X1M0 2c */
+                                        andAbs16,           /* X1M0 2d */
+                                        rolAbs16,           /* X1M0 2e */
+                                        andLong16,          /* X1M0 2f */
+                                        bmi,                /* X1M0 30 */
+                                        andIndirecty16,     /* X1M0 31 */
+                                        andIndirect16,      /* X1M0 32 */
+                                        andsIndirecty16,    /* X1M0 33 */
+                                        bitZpx16,           /* X1M0 34 */
+                                        andZpx16,           /* X1M0 35 */
+                                        rolZpx16,           /* X1M0 36 */
+                                        andIndirectLongy16, /* X1M0 37 */
+                                        sec,                /* X1M0 38 */
+                                        andAbsy16,          /* X1M0 39 */
+                                        deca16,             /* X1M0 3a */
+                                        tsc,                /* X1M0 3b */
+                                        bitAbsx16,          /* X1M0 3c */
+                                        andAbsx16,          /* X1M0 3d */
+                                        rolAbsx16,          /* X1M0 3e */
+                                        andLongx16,         /* X1M0 3f */
+                                        rti,                /* X1M0 40 */
+                                        eorIndirectx16,     /* X1M0 41 */
+                                        wdm,                /* X1M0 42 */
+                                        eorSp16,            /* X1M0 43 */
+                                        mvp,                /* X1M0 44 */
+                                        eorZp16,            /* X1M0 45 */
+                                        lsrZp16,            /* X1M0 46 */
+                                        eorIndirectLong16,  /* X1M0 47 */
+                                        pha16,              /* X1M0 48 */
+                                        eorImm16,           /* X1M0 49 */
+                                        lsra16,             /* X1M0 4a */
+                                        phk,                /* X1M0 4b */
+                                        jmp,                /* X1M0 4c */
+                                        eorAbs16,           /* X1M0 4d */
+                                        lsrAbs16,           /* X1M0 4e */
+                                        eorLong16,          /* X1M0 4f */
+                                        bvc,                /* X1M0 50 */
+                                        eorIndirecty16,     /* X1M0 51 */
+                                        eorIndirect16,      /* X1M0 52 */
+                                        eorsIndirecty16,    /* X1M0 53 */
+                                        mvn,                /* X1M0 54 */
+                                        eorZpx16,           /* X1M0 55 */
+                                        lsrZpx16,           /* X1M0 56 */
+                                        eorIndirectLongy16, /* X1M0 57 */
+                                        cli,                /* X1M0 58 */
+                                        eorAbsy16,          /* X1M0 59 */
+                                        phy8,               /* X1M0 5a */
+                                        tcd,                /* X1M0 5b */
+                                        jmplong,            /* X1M0 5c */
+                                        eorAbsx16,          /* X1M0 5d */
+                                        lsrAbsx16,          /* X1M0 5e */
+                                        eorLongx16,         /* X1M0 5f */
+                                        rts,                /* X1M0 60 */
+                                        adcIndirectx16,     /* X1M0 61 */
+                                        per,                /* X1M0 62 */
+                                        adcSp16,            /* X1M0 63 */
+                                        stzZp16,            /* X1M0 64 */
+                                        adcZp16,            /* X1M0 65 */
+                                        rorZp16,            /* X1M0 66 */
+                                        adcIndirectLong16,  /* X1M0 67 */
+                                        pla16,              /* X1M0 68 */
+                                        adcImm16,           /* X1M0 69 */
+                                        rora16,             /* X1M0 6a */
+                                        rtl,                /* X1M0 6b */
+                                        jmpind,             /* X1M0 6c */
+                                        adcAbs16,           /* X1M0 6d */
+                                        rorAbs16,           /* X1M0 6e */
+                                        adcLong16,          /* X1M0 6f */
+                                        bvs,                /* X1M0 70 */
+                                        adcIndirecty16,     /* X1M0 71 */
+                                        adcIndirect16,      /* X1M0 72 */
+                                        adcsIndirecty16,    /* X1M0 73 */
+                                        stzZpx16,           /* X1M0 74 */
+                                        adcZpx16,           /* X1M0 75 */
+                                        rorZpx16,           /* X1M0 76 */
+                                        adcIndirectLongy16, /* X1M0 77 */
+                                        sei,                /* X1M0 78 */
+                                        adcAbsy16,          /* X1M0 79 */
+                                        ply8,               /* X1M0 7a */
+                                        tdc,                /* X1M0 7b */
+                                        jmpindx,            /* X1M0 7c */
+                                        adcAbsx16,          /* X1M0 7d */
+                                        rorAbsx16,          /* X1M0 7e */
+                                        adcLongx16,         /* X1M0 7f */
+                                        bra,                /* X1M0 80 */
+                                        staIndirectx16,     /* X1M0 81 */
+                                        brl,                /* X1M0 82 */
+                                        staSp16,            /* X1M0 83 */
+                                        styZp8,             /* X1M0 84 */
+                                        staZp16,            /* X1M0 85 */
+                                        stxZp8,             /* X1M0 86 */
+                                        staIndirectLong16,  /* X1M0 87 */
+                                        dey8,               /* X1M0 88 */
+                                        bitImm16,           /* X1M0 89 */
+                                        txa16,              /* X1M0 8a */
+                                        phb,                /* X1M0 8b */
+                                        styAbs8,            /* X1M0 8c */
+                                        staAbs16,           /* X1M0 8d */
+                                        stxAbs8,            /* X1M0 8e */
+                                        staLong16,          /* X1M0 8f */
+                                        bcc,                /* X1M0 90 */
+                                        staIndirecty16,     /* X1M0 91 */
+                                        staIndirect16,      /* X1M0 92 */
+                                        staSIndirecty16,    /* X1M0 93 */
+                                        styZpx8,            /* X1M0 94 */
+                                        staZpx16,           /* X1M0 95 */
+                                        stxZpy8,            /* X1M0 96 */
+                                        staIndirectLongy16, /* X1M0 97 */
+                                        tya16,              /* X1M0 98 */
+                                        staAbsy16,          /* X1M0 99 */
+                                        txs8,               /* X1M0 9a */
+                                        txy8,               /* X1M0 9b */
+                                        stzAbs16,           /* X1M0 9c */
+                                        staAbsx16,          /* X1M0 9d */
+                                        stzAbsx16,          /* X1M0 9e */
+                                        staLongx16,         /* X1M0 9f */
+                                        ldyImm8,            /* X1M0 a0 */
+                                        ldaIndirectx16,     /* X1M0 a1 */
+                                        ldxImm8,            /* X1M0 a2 */
+                                        ldaSp16,            /* X1M0 a3 */
+                                        ldyZp8,             /* X1M0 a4 */
+                                        ldaZp16,            /* X1M0 a5 */
+                                        ldxZp8,             /* X1M0 a6 */
+                                        ldaIndirectLong16,  /* X1M0 a7 */
+                                        tay8,               /* X1M0 a8 */
+                                        ldaImm16,           /* X1M0 a9 */
+                                        tax8,               /* X1M0 aa */
+                                        plb,                /* X1M0 ab */
+                                        ldyAbs8,            /* X1M0 ac */
+                                        ldaAbs16,           /* X1M0 ad */
+                                        ldxAbs8,            /* X1M0 ae */
+                                        ldaLong16,          /* X1M0 af */
+                                        bcs,                /* X1M0 b0 */
+                                        ldaIndirecty16,     /* X1M0 b1 */
+                                        ldaIndirect16,      /* X1M0 b2 */
+                                        ldaSIndirecty16,    /* X1M0 b3 */
+                                        ldyZpx8,            /* X1M0 b4 */
+                                        ldaZpx16,           /* X1M0 b5 */
+                                        ldxZpy8,            /* X1M0 b6 */
+                                        ldaIndirectLongy16, /* X1M0 b7 */
+                                        clv,                /* X1M0 b8 */
+                                        ldaAbsy16,          /* X1M0 b9 */
+                                        tsx8,               /* X1M0 ba */
+                                        tyx8,               /* X1M0 bb */
+                                        ldyAbsx8,           /* X1M0 bc */
+                                        ldaAbsx16,          /* X1M0 bd */
+                                        ldxAbsy8,           /* X1M0 be */
+                                        ldaLongx16,         /* X1M0 bf */
+                                        cpyImm8,            /* X1M0 c0 */
+                                        cmpIndirectx16,     /* X1M0 c1 */
+                                        rep65816,           /* X1M0 c2 */
+                                        cmpSp16,            /* X1M0 c3 */
+                                        cpyZp8,             /* X1M0 c4 */
+                                        cmpZp16,            /* X1M0 c5 */
+                                        decZp16,            /* X1M0 c6 */
+                                        cmpIndirectLong16,  /* X1M0 c7 */
+                                        iny8,               /* X1M0 c8 */
+                                        cmpImm16,           /* X1M0 c9 */
+                                        dex8,               /* X1M0 ca */
+                                        wai,                /* X1M0 cb */
+                                        cpyAbs8,            /* X1M0 cc */
+                                        cmpAbs16,           /* X1M0 cd */
+                                        decAbs16,           /* X1M0 ce */
+                                        cmpLong16,          /* X1M0 cf */
+                                        bne,                /* X1M0 d0 */
+                                        cmpIndirecty16,     /* X1M0 d1 */
+                                        cmpIndirect16,      /* X1M0 d2 */
+                                        cmpsIndirecty16,    /* X1M0 d3 */
+                                        pei,                /* X1M0 d4 */
+                                        cmpZpx16,           /* X1M0 d5 */
+                                        decZpx16,           /* X1M0 d6 */
+                                        cmpIndirectLongy16, /* X1M0 d7 */
+                                        cld,                /* X1M0 d8 */
+                                        cmpAbsy16,          /* X1M0 d9 */
+                                        phx8,               /* X1M0 da */
+                                        stp,                /* X1M0 db */
+                                        jmlind,             /* X1M0 dc */
+                                        cmpAbsx16,          /* X1M0 dd */
+                                        decAbsx16,          /* X1M0 de */
+                                        cmpLongx16,         /* X1M0 df */
+                                        cpxImm8,            /* X1M0 e0 */
+                                        sbcIndirectx16,     /* X1M0 e1 */
+                                        sep,                /* X1M0 e2 */
+                                        sbcSp16,            /* X1M0 e3 */
+                                        cpxZp8,             /* X1M0 e4 */
+                                        sbcZp16,            /* X1M0 e5 */
+                                        incZp16,            /* X1M0 e6 */
+                                        sbcIndirectLong16,  /* X1M0 e7 */
+                                        inx8,               /* X1M0 e8 */
+                                        sbcImm16,           /* X1M0 e9 */
+                                        nop,                /* X1M0 ea */
+                                        xba,                /* X1M0 eb */
+                                        cpxAbs8,            /* X1M0 ec */
+                                        sbcAbs16,           /* X1M0 ed */
+                                        incAbs16,           /* X1M0 ee */
+                                        sbcLong16,          /* X1M0 ef */
+                                        beq,                /* X1M0 f0 */
+                                        sbcIndirecty16,     /* X1M0 f1 */
+                                        sbcIndirect16,      /* X1M0 f2 */
+                                        sbcsIndirecty16,    /* X1M0 f3 */
+                                        pea,                /* X1M0 f4 */
+                                        sbcZpx16,           /* X1M0 f5 */
+                                        incZpx16,           /* X1M0 f6 */
+                                        sbcIndirectLongy16, /* X1M0 f7 */
+                                        sed,                /* X1M0 f8 */
+                                        sbcAbsy16,          /* X1M0 f9 */
+                                        plx8,               /* X1M0 fa */
+                                        xce,                /* X1M0 fb */
+                                        jsrIndx,            /* X1M0 fc */
+                                        sbcAbsx16,          /* X1M0 fd */
+                                        incAbsx16,          /* X1M0 fe */
+                                        sbcLongx16,         /* X1M0 ff */
+                                    },
+                                    {
+                                        op_brk,            /* X0M1 00 */
+                                        oraIndirectx8,     /* X0M1 01 */
+                                        cop,               /* X0M1 02 */
+                                        oraSp8,            /* X0M1 03 */
+                                        tsbZp8,            /* X0M1 04 */
+                                        oraZp8,            /* X0M1 05 */
+                                        aslZp8,            /* X0M1 06 */
+                                        oraIndirectLong8,  /* X0M1 07 */
+                                        php,               /* X0M1 08 */
+                                        oraImm8,           /* X0M1 09 */
+                                        asla8,             /* X0M1 0a */
+                                        phd,               /* X0M1 0b */
+                                        tsbAbs8,           /* X0M1 0c */
+                                        oraAbs8,           /* X0M1 0d */
+                                        aslAbs8,           /* X0M1 0e */
+                                        oraLong8,          /* X0M1 0f */
+                                        bpl,               /* X0M1 10 */
+                                        oraIndirecty8,     /* X0M1 11 */
+                                        oraIndirect8,      /* X0M1 12 */
+                                        orasIndirecty8,    /* X0M1 13 */
+                                        trbZp8,            /* X0M1 14 */
+                                        oraZpx8,           /* X0M1 15 */
+                                        aslZpx8,           /* X0M1 16 */
+                                        oraIndirectLongy8, /* X0M1 17 */
+                                        clc,               /* X0M1 18 */
+                                        oraAbsy8,          /* X0M1 19 */
+                                        inca8,             /* X0M1 1a */
+                                        tcs,               /* X0M1 1b */
+                                        trbAbs8,           /* X0M1 1c */
+                                        oraAbsx8,          /* X0M1 1d */
+                                        aslAbsx8,          /* X0M1 1e */
+                                        oraLongx8,         /* X0M1 1f */
+                                        jsr,               /* X0M1 20 */
+                                        andIndirectx8,     /* X0M1 21 */
+                                        jsl,               /* X0M1 22 */
+                                        andSp8,            /* X0M1 23 */
+                                        bitZp8,            /* X0M1 24 */
+                                        andZp8,            /* X0M1 25 */
+                                        rolZp8,            /* X0M1 26 */
+                                        andIndirectLong8,  /* X0M1 27 */
+                                        plp,               /* X0M1 28 */
+                                        andImm8,           /* X0M1 29 */
+                                        rola8,             /* X0M1 2a */
+                                        pld,               /* X0M1 2b */
+                                        bitAbs8,           /* X0M1 2c */
+                                        andAbs8,           /* X0M1 2d */
+                                        rolAbs8,           /* X0M1 2e */
+                                        andLong8,          /* X0M1 2f */
+                                        bmi,               /* X0M1 30 */
+                                        andIndirecty8,     /* X0M1 31 */
+                                        andIndirect8,      /* X0M1 32 */
+                                        andsIndirecty8,    /* X0M1 33 */
+                                        bitZpx8,           /* X0M1 34 */
+                                        andZpx8,           /* X0M1 35 */
+                                        rolZpx8,           /* X0M1 36 */
+                                        andIndirectLongy8, /* X0M1 37 */
+                                        sec,               /* X0M1 38 */
+                                        andAbsy8,          /* X0M1 39 */
+                                        deca8,             /* X0M1 3a */
+                                        tsc,               /* X0M1 3b */
+                                        bitAbsx8,          /* X0M1 3c */
+                                        andAbsx8,          /* X0M1 3d */
+                                        rolAbsx8,          /* X0M1 3e */
+                                        andLongx8,         /* X0M1 3f */
+                                        rti,               /* X0M1 40 */
+                                        eorIndirectx8,     /* X0M1 41 */
+                                        wdm,               /* X0M1 42 */
+                                        eorSp8,            /* X0M1 43 */
+                                        mvp,               /* X0M1 44 */
+                                        eorZp8,            /* X0M1 45 */
+                                        lsrZp8,            /* X0M1 46 */
+                                        eorIndirectLong8,  /* X0M1 47 */
+                                        pha8,              /* X0M1 48 */
+                                        eorImm8,           /* X0M1 49 */
+                                        lsra8,             /* X0M1 4a */
+                                        phk,               /* X0M1 4b */
+                                        jmp,               /* X0M1 4c */
+                                        eorAbs8,           /* X0M1 4d */
+                                        lsrAbs8,           /* X0M1 4e */
+                                        eorLong8,          /* X0M1 4f */
+                                        bvc,               /* X0M1 50 */
+                                        eorIndirecty8,     /* X0M1 51 */
+                                        eorIndirect8,      /* X0M1 52 */
+                                        eorsIndirecty8,    /* X0M1 53 */
+                                        mvn,               /* X0M1 54 */
+                                        eorZpx8,           /* X0M1 55 */
+                                        lsrZpx8,           /* X0M1 56 */
+                                        eorIndirectLongy8, /* X0M1 57 */
+                                        cli,               /* X0M1 58 */
+                                        eorAbsy8,          /* X0M1 59 */
+                                        phy16,             /* X0M1 5a */
+                                        tcd,               /* X0M1 5b */
+                                        jmplong,           /* X0M1 5c */
+                                        eorAbsx8,          /* X0M1 5d */
+                                        lsrAbsx8,          /* X0M1 5e */
+                                        eorLongx8,         /* X0M1 5f */
+                                        rts,               /* X0M1 60 */
+                                        adcIndirectx8,     /* X0M1 61 */
+                                        per,               /* X0M1 62 */
+                                        adcSp8,            /* X0M1 63 */
+                                        stzZp8,            /* X0M1 64 */
+                                        adcZp8,            /* X0M1 65 */
+                                        rorZp8,            /* X0M1 66 */
+                                        adcIndirectLong8,  /* X0M1 67 */
+                                        pla8,              /* X0M1 68 */
+                                        adcImm8,           /* X0M1 69 */
+                                        rora8,             /* X0M1 6a */
+                                        rtl,               /* X0M1 6b */
+                                        jmpind,            /* X0M1 6c */
+                                        adcAbs8,           /* X0M1 6d */
+                                        rorAbs8,           /* X0M1 6e */
+                                        adcLong8,          /* X0M1 6f */
+                                        bvs,               /* X0M1 70 */
+                                        adcIndirecty8,     /* X0M1 71 */
+                                        adcIndirect8,      /* X0M1 72 */
+                                        adcsIndirecty8,    /* X0M1 73 */
+                                        stzZpx8,           /* X0M1 74 */
+                                        adcZpx8,           /* X0M1 75 */
+                                        rorZpx8,           /* X0M1 76 */
+                                        adcIndirectLongy8, /* X0M1 77 */
+                                        sei,               /* X0M1 78 */
+                                        adcAbsy8,          /* X0M1 79 */
+                                        ply16,             /* X0M1 7a */
+                                        tdc,               /* X0M1 7b */
+                                        jmpindx,           /* X0M1 7c */
+                                        adcAbsx8,          /* X0M1 7d */
+                                        rorAbsx8,          /* X0M1 7e */
+                                        adcLongx8,         /* X0M1 7f */
+                                        bra,               /* X0M1 80 */
+                                        staIndirectx8,     /* X0M1 81 */
+                                        brl,               /* X0M1 82 */
+                                        staSp8,            /* X0M1 83 */
+                                        styZp16,           /* X0M1 84 */
+                                        staZp8,            /* X0M1 85 */
+                                        stxZp16,           /* X0M1 86 */
+                                        staIndirectLong8,  /* X0M1 87 */
+                                        dey16,             /* X0M1 88 */
+                                        bitImm8,           /* X0M1 89 */
+                                        txa8,              /* X0M1 8a */
+                                        phb,               /* X0M1 8b */
+                                        styAbs16,          /* X0M1 8c */
+                                        staAbs8,           /* X0M1 8d */
+                                        stxAbs16,          /* X0M1 8e */
+                                        staLong8,          /* X0M1 8f */
+                                        bcc,               /* X0M1 90 */
+                                        staIndirecty8,     /* X0M1 91 */
+                                        staIndirect8,      /* X0M1 92 */
+                                        staSIndirecty8,    /* X0M1 93 */
+                                        styZpx16,          /* X0M1 94 */
+                                        staZpx8,           /* X0M1 95 */
+                                        stxZpy16,          /* X0M1 96 */
+                                        staIndirectLongy8, /* X0M1 97 */
+                                        tya8,              /* X0M1 98 */
+                                        staAbsy8,          /* X0M1 99 */
+                                        txs16,             /* X0M1 9a */
+                                        txy16,             /* X0M1 9b */
+                                        stzAbs8,           /* X0M1 9c */
+                                        staAbsx8,          /* X0M1 9d */
+                                        stzAbsx8,          /* X0M1 9e */
+                                        staLongx8,         /* X0M1 9f */
+                                        ldyImm16,          /* X0M1 a0 */
+                                        ldaIndirectx8,     /* X0M1 a1 */
+                                        ldxImm16,          /* X0M1 a2 */
+                                        ldaSp8,            /* X0M1 a3 */
+                                        ldyZp16,           /* X0M1 a4 */
+                                        ldaZp8,            /* X0M1 a5 */
+                                        ldxZp16,           /* X0M1 a6 */
+                                        ldaIndirectLong8,  /* X0M1 a7 */
+                                        tay16,             /* X0M1 a8 */
+                                        ldaImm8,           /* X0M1 a9 */
+                                        tax16,             /* X0M1 aa */
+                                        plb,               /* X0M1 ab */
+                                        ldyAbs16,          /* X0M1 ac */
+                                        ldaAbs8,           /* X0M1 ad */
+                                        ldxAbs16,          /* X0M1 ae */
+                                        ldaLong8,          /* X0M1 af */
+                                        bcs,               /* X0M1 b0 */
+                                        ldaIndirecty8,     /* X0M1 b1 */
+                                        ldaIndirect8,      /* X0M1 b2 */
+                                        ldaSIndirecty8,    /* X0M1 b3 */
+                                        ldyZpx16,          /* X0M1 b4 */
+                                        ldaZpx8,           /* X0M1 b5 */
+                                        ldxZpy16,          /* X0M1 b6 */
+                                        ldaIndirectLongy8, /* X0M1 b7 */
+                                        clv,               /* X0M1 b8 */
+                                        ldaAbsy8,          /* X0M1 b9 */
+                                        tsx16,             /* X0M1 ba */
+                                        tyx16,             /* X0M1 bb */
+                                        ldyAbsx16,         /* X0M1 bc */
+                                        ldaAbsx8,          /* X0M1 bd */
+                                        ldxAbsy16,         /* X0M1 be */
+                                        ldaLongx8,         /* X0M1 bf */
+                                        cpyImm16,          /* X0M1 c0 */
+                                        cmpIndirectx8,     /* X0M1 c1 */
+                                        rep65816,          /* X0M1 c2 */
+                                        cmpSp8,            /* X0M1 c3 */
+                                        cpyZp16,           /* X0M1 c4 */
+                                        cmpZp8,            /* X0M1 c5 */
+                                        decZp8,            /* X0M1 c6 */
+                                        cmpIndirectLong8,  /* X0M1 c7 */
+                                        iny16,             /* X0M1 c8 */
+                                        cmpImm8,           /* X0M1 c9 */
+                                        dex16,             /* X0M1 ca */
+                                        wai,               /* X0M1 cb */
+                                        cpyAbs16,          /* X0M1 cc */
+                                        cmpAbs8,           /* X0M1 cd */
+                                        decAbs8,           /* X0M1 ce */
+                                        cmpLong8,          /* X0M1 cf */
+                                        bne,               /* X0M1 d0 */
+                                        cmpIndirecty8,     /* X0M1 d1 */
+                                        cmpIndirect8,      /* X0M1 d2 */
+                                        cmpsIndirecty8,    /* X0M1 d3 */
+                                        pei,               /* X0M1 d4 */
+                                        cmpZpx8,           /* X0M1 d5 */
+                                        decZpx8,           /* X0M1 d6 */
+                                        cmpIndirectLongy8, /* X0M1 d7 */
+                                        cld,               /* X0M1 d8 */
+                                        cmpAbsy8,          /* X0M1 d9 */
+                                        phx16,             /* X0M1 da */
+                                        stp,               /* X0M1 db */
+                                        jmlind,            /* X0M1 dc */
+                                        cmpAbsx8,          /* X0M1 dd */
+                                        decAbsx8,          /* X0M1 de */
+                                        cmpLongx8,         /* X0M1 df */
+                                        cpxImm16,          /* X0M1 e0 */
+                                        sbcIndirectx8,     /* X0M1 e1 */
+                                        sep,               /* X0M1 e2 */
+                                        sbcSp8,            /* X0M1 e3 */
+                                        cpxZp16,           /* X0M1 e4 */
+                                        sbcZp8,            /* X0M1 e5 */
+                                        incZp8,            /* X0M1 e6 */
+                                        sbcIndirectLong8,  /* X0M1 e7 */
+                                        inx16,             /* X0M1 e8 */
+                                        sbcImm8,           /* X0M1 e9 */
+                                        nop,               /* X0M1 ea */
+                                        xba,               /* X0M1 eb */
+                                        cpxAbs16,          /* X0M1 ec */
+                                        sbcAbs8,           /* X0M1 ed */
+                                        incAbs8,           /* X0M1 ee */
+                                        sbcLong8,          /* X0M1 ef */
+                                        beq,               /* X0M1 f0 */
+                                        sbcIndirecty8,     /* X0M1 f1 */
+                                        sbcIndirect8,      /* X0M1 f2 */
+                                        sbcsIndirecty8,    /* X0M1 f3 */
+                                        pea,               /* X0M1 f4 */
+                                        sbcZpx8,           /* X0M1 f5 */
+                                        incZpx8,           /* X0M1 f6 */
+                                        sbcIndirectLongy8, /* X0M1 f7 */
+                                        sed,               /* X0M1 f8 */
+                                        sbcAbsy8,          /* X0M1 f9 */
+                                        plx16,             /* X0M1 fa */
+                                        xce,               /* X0M1 fb */
+                                        jsrIndx,           /* X0M1 fc */
+                                        sbcAbsx8,          /* X0M1 fd */
+                                        incAbsx8,          /* X0M1 fe */
+                                        sbcLongx8,         /* X0M1 ff */
+                                    },
+                                    {
+                                        op_brk,             /* X0M0 00 */
+                                        oraIndirectx16,     /* X0M0 01 */
+                                        cop,                /* X0M0 02 */
+                                        oraSp16,            /* X0M0 03 */
+                                        tsbZp16,            /* X0M0 04 */
+                                        oraZp16,            /* X0M0 05 */
+                                        aslZp16,            /* X0M0 06 */
+                                        oraIndirectLong16,  /* X0M0 07 */
+                                        php,                /* X0M0 08 */
+                                        oraImm16,           /* X0M0 09 */
+                                        asla16,             /* X0M0 0a */
+                                        phd,                /* X0M0 0b */
+                                        tsbAbs16,           /* X0M0 0c */
+                                        oraAbs16,           /* X0M0 0d */
+                                        aslAbs16,           /* X0M0 0e */
+                                        oraLong16,          /* X0M0 0f */
+                                        bpl,                /* X0M0 10 */
+                                        oraIndirecty16,     /* X0M0 11 */
+                                        oraIndirect16,      /* X0M0 12 */
+                                        orasIndirecty16,    /* X0M0 13 */
+                                        trbZp16,            /* X0M0 14 */
+                                        oraZpx16,           /* X0M0 15 */
+                                        aslZpx16,           /* X0M0 16 */
+                                        oraIndirectLongy16, /* X0M0 17 */
+                                        clc,                /* X0M0 18 */
+                                        oraAbsy16,          /* X0M0 19 */
+                                        inca16,             /* X0M0 1a */
+                                        tcs,                /* X0M0 1b */
+                                        trbAbs16,           /* X0M0 1c */
+                                        oraAbsx16,          /* X0M0 1d */
+                                        aslAbsx16,          /* X0M0 1e */
+                                        oraLongx16,         /* X0M0 1f */
+                                        jsr,                /* X0M0 20 */
+                                        andIndirectx16,     /* X0M0 21 */
+                                        jsl,                /* X0M0 22 */
+                                        andSp16,            /* X0M0 23 */
+                                        bitZp16,            /* X0M0 24 */
+                                        andZp16,            /* X0M0 25 */
+                                        rolZp16,            /* X0M0 26 */
+                                        andIndirectLong16,  /* X0M0 27 */
+                                        plp,                /* X0M0 28 */
+                                        andImm16,           /* X0M0 29 */
+                                        rola16,             /* X0M0 2a */
+                                        pld,                /* X0M0 2b */
+                                        bitAbs16,           /* X0M0 2c */
+                                        andAbs16,           /* X0M0 2d */
+                                        rolAbs16,           /* X0M0 2e */
+                                        andLong16,          /* X0M0 2f */
+                                        bmi,                /* X0M0 30 */
+                                        andIndirecty16,     /* X0M0 31 */
+                                        andIndirect16,      /* X0M0 32 */
+                                        andsIndirecty16,    /* X0M0 33 */
+                                        bitZpx16,           /* X0M0 34 */
+                                        andZpx16,           /* X0M0 35 */
+                                        rolZpx16,           /* X0M0 36 */
+                                        andIndirectLongy16, /* X0M0 37 */
+                                        sec,                /* X0M0 38 */
+                                        andAbsy16,          /* X0M0 39 */
+                                        deca16,             /* X0M0 3a */
+                                        tsc,                /* X0M0 3b */
+                                        bitAbsx16,          /* X0M0 3c */
+                                        andAbsx16,          /* X0M0 3d */
+                                        rolAbsx16,          /* X0M0 3e */
+                                        andLongx16,         /* X0M0 3f */
+                                        rti,                /* X0M0 40 */
+                                        eorIndirectx16,     /* X0M0 41 */
+                                        wdm,                /* X0M0 42 */
+                                        eorSp16,            /* X0M0 43 */
+                                        mvp,                /* X0M0 44 */
+                                        eorZp16,            /* X0M0 45 */
+                                        lsrZp16,            /* X0M0 46 */
+                                        eorIndirectLong16,  /* X0M0 47 */
+                                        pha16,              /* X0M0 48 */
+                                        eorImm16,           /* X0M0 49 */
+                                        lsra16,             /* X0M0 4a */
+                                        phk,                /* X0M0 4b */
+                                        jmp,                /* X0M0 4c */
+                                        eorAbs16,           /* X0M0 4d */
+                                        lsrAbs16,           /* X0M0 4e */
+                                        eorLong16,          /* X0M0 4f */
+                                        bvc,                /* X0M0 50 */
+                                        eorIndirecty16,     /* X0M0 51 */
+                                        eorIndirect16,      /* X0M0 52 */
+                                        eorsIndirecty16,    /* X0M0 53 */
+                                        mvn,                /* X0M0 54 */
+                                        eorZpx16,           /* X0M0 55 */
+                                        lsrZpx16,           /* X0M0 56 */
+                                        eorIndirectLongy16, /* X0M0 57 */
+                                        cli,                /* X0M0 58 */
+                                        eorAbsy16,          /* X0M0 59 */
+                                        phy16,              /* X0M0 5a */
+                                        tcd,                /* X0M0 5b */
+                                        jmplong,            /* X0M0 5c */
+                                        eorAbsx16,          /* X0M0 5d */
+                                        lsrAbsx16,          /* X0M0 5e */
+                                        eorLongx16,         /* X0M0 5f */
+                                        rts,                /* X0M0 60 */
+                                        adcIndirectx16,     /* X0M0 61 */
+                                        per,                /* X0M0 62 */
+                                        adcSp16,            /* X0M0 63 */
+                                        stzZp16,            /* X0M0 64 */
+                                        adcZp16,            /* X0M0 65 */
+                                        rorZp16,            /* X0M0 66 */
+                                        adcIndirectLong16,  /* X0M0 67 */
+                                        pla16,              /* X0M0 68 */
+                                        adcImm16,           /* X0M0 69 */
+                                        rora16,             /* X0M0 6a */
+                                        rtl,                /* X0M0 6b */
+                                        jmpind,             /* X0M0 6c */
+                                        adcAbs16,           /* X0M0 6d */
+                                        rorAbs16,           /* X0M0 6e */
+                                        adcLong16,          /* X0M0 6f */
+                                        bvs,                /* X0M0 70 */
+                                        adcIndirecty16,     /* X0M0 71 */
+                                        adcIndirect16,      /* X0M0 72 */
+                                        adcsIndirecty16,    /* X0M0 73 */
+                                        stzZpx16,           /* X0M0 74 */
+                                        adcZpx16,           /* X0M0 75 */
+                                        rorZpx16,           /* X0M0 76 */
+                                        adcIndirectLongy16, /* X0M0 77 */
+                                        sei,                /* X0M0 78 */
+                                        adcAbsy16,          /* X0M0 79 */
+                                        ply16,              /* X0M0 7a */
+                                        tdc,                /* X0M0 7b */
+                                        jmpindx,            /* X0M0 7c */
+                                        adcAbsx16,          /* X0M0 7d */
+                                        rorAbsx16,          /* X0M0 7e */
+                                        adcLongx16,         /* X0M0 7f */
+                                        bra,                /* X0M0 80 */
+                                        staIndirectx16,     /* X0M0 81 */
+                                        brl,                /* X0M0 82 */
+                                        staSp16,            /* X0M0 83 */
+                                        styZp16,            /* X0M0 84 */
+                                        staZp16,            /* X0M0 85 */
+                                        stxZp16,            /* X0M0 86 */
+                                        staIndirectLong16,  /* X0M0 87 */
+                                        dey16,              /* X0M0 88 */
+                                        bitImm16,           /* X0M0 89 */
+                                        txa16,              /* X0M0 8a */
+                                        phb,                /* X0M0 8b */
+                                        styAbs16,           /* X0M0 8c */
+                                        staAbs16,           /* X0M0 8d */
+                                        stxAbs16,           /* X0M0 8e */
+                                        staLong16,          /* X0M0 8f */
+                                        bcc,                /* X0M0 90 */
+                                        staIndirecty16,     /* X0M0 91 */
+                                        staIndirect16,      /* X0M0 92 */
+                                        staSIndirecty16,    /* X0M0 93 */
+                                        styZpx16,           /* X0M0 94 */
+                                        staZpx16,           /* X0M0 95 */
+                                        stxZpy16,           /* X0M0 96 */
+                                        staIndirectLongy16, /* X0M0 97 */
+                                        tya16,              /* X0M0 98 */
+                                        staAbsy16,          /* X0M0 99 */
+                                        txs16,              /* X0M0 9a */
+                                        txy16,              /* X0M0 9b */
+                                        stzAbs16,           /* X0M0 9c */
+                                        staAbsx16,          /* X0M0 9d */
+                                        stzAbsx16,          /* X0M0 9e */
+                                        staLongx16,         /* X0M0 9f */
+                                        ldyImm16,           /* X0M0 a0 */
+                                        ldaIndirectx16,     /* X0M0 a1 */
+                                        ldxImm16,           /* X0M0 a2 */
+                                        ldaSp16,            /* X0M0 a3 */
+                                        ldyZp16,            /* X0M0 a4 */
+                                        ldaZp16,            /* X0M0 a5 */
+                                        ldxZp16,            /* X0M0 a6 */
+                                        ldaIndirectLong16,  /* X0M0 a7 */
+                                        tay16,              /* X0M0 a8 */
+                                        ldaImm16,           /* X0M0 a9 */
+                                        tax16,              /* X0M0 aa */
+                                        plb,                /* X0M0 ab */
+                                        ldyAbs16,           /* X0M0 ac */
+                                        ldaAbs16,           /* X0M0 ad */
+                                        ldxAbs16,           /* X0M0 ae */
+                                        ldaLong16,          /* X0M0 af */
+                                        bcs,                /* X0M0 b0 */
+                                        ldaIndirecty16,     /* X0M0 b1 */
+                                        ldaIndirect16,      /* X0M0 b2 */
+                                        ldaSIndirecty16,    /* X0M0 b3 */
+                                        ldyZpx16,           /* X0M0 b4 */
+                                        ldaZpx16,           /* X0M0 b5 */
+                                        ldxZpy16,           /* X0M0 b6 */
+                                        ldaIndirectLongy16, /* X0M0 b7 */
+                                        clv,                /* X0M0 b8 */
+                                        ldaAbsy16,          /* X0M0 b9 */
+                                        tsx16,              /* X0M0 ba */
+                                        tyx16,              /* X0M0 bb */
+                                        ldyAbsx16,          /* X0M0 bc */
+                                        ldaAbsx16,          /* X0M0 bd */
+                                        ldxAbsy16,          /* X0M0 be */
+                                        ldaLongx16,         /* X0M0 bf */
+                                        cpyImm16,           /* X0M0 c0 */
+                                        cmpIndirectx16,     /* X0M0 c1 */
+                                        rep65816,           /* X0M0 c2 */
+                                        cmpSp16,            /* X0M0 c3 */
+                                        cpyZp16,            /* X0M0 c4 */
+                                        cmpZp16,            /* X0M0 c5 */
+                                        decZp16,            /* X0M0 c6 */
+                                        cmpIndirectLong16,  /* X0M0 c7 */
+                                        iny16,              /* X0M0 c8 */
+                                        cmpImm16,           /* X0M0 c9 */
+                                        dex16,              /* X0M0 ca */
+                                        wai,                /* X0M0 cb */
+                                        cpyAbs16,           /* X0M0 cc */
+                                        cmpAbs16,           /* X0M0 cd */
+                                        decAbs16,           /* X0M0 ce */
+                                        cmpLong16,          /* X0M0 cf */
+                                        bne,                /* X0M0 d0 */
+                                        cmpIndirecty16,     /* X0M0 d1 */
+                                        cmpIndirect16,      /* X0M0 d2 */
+                                        cmpsIndirecty16,    /* X0M0 d3 */
+                                        pei,                /* X0M0 d4 */
+                                        cmpZpx16,           /* X0M0 d5 */
+                                        decZpx16,           /* X0M0 d6 */
+                                        cmpIndirectLongy16, /* X0M0 d7 */
+                                        cld,                /* X0M0 d8 */
+                                        cmpAbsy16,          /* X0M0 d9 */
+                                        phx16,              /* X0M0 da */
+                                        stp,                /* X0M0 db */
+                                        jmlind,             /* X0M0 dc */
+                                        cmpAbsx16,          /* X0M0 dd */
+                                        decAbsx16,          /* X0M0 de */
+                                        cmpLongx16,         /* X0M0 df */
+                                        cpxImm16,           /* X0M0 e0 */
+                                        sbcIndirectx16,     /* X0M0 e1 */
+                                        sep,                /* X0M0 e2 */
+                                        sbcSp16,            /* X0M0 e3 */
+                                        cpxZp16,            /* X0M0 e4 */
+                                        sbcZp16,            /* X0M0 e5 */
+                                        incZp16,            /* X0M0 e6 */
+                                        sbcIndirectLong16,  /* X0M0 e7 */
+                                        inx16,              /* X0M0 e8 */
+                                        sbcImm16,           /* X0M0 e9 */
+                                        nop,                /* X0M0 ea */
+                                        xba,                /* X0M0 eb */
+                                        cpxAbs16,           /* X0M0 ec */
+                                        sbcAbs16,           /* X0M0 ed */
+                                        incAbs16,           /* X0M0 ee */
+                                        sbcLong16,          /* X0M0 ef */
+                                        beq,                /* X0M0 f0 */
+                                        sbcIndirecty16,     /* X0M0 f1 */
+                                        sbcIndirect16,      /* X0M0 f2 */
+                                        sbcsIndirecty16,    /* X0M0 f3 */
+                                        pea,                /* X0M0 f4 */
+                                        sbcZpx16,           /* X0M0 f5 */
+                                        incZpx16,           /* X0M0 f6 */
+                                        sbcIndirectLongy16, /* X0M0 f7 */
+                                        sed,                /* X0M0 f8 */
+                                        sbcAbsy16,          /* X0M0 f9 */
+                                        plx16,              /* X0M0 fa */
+                                        xce,                /* X0M0 fb */
+                                        jsrIndx,            /* X0M0 fc */
+                                        sbcAbsx16,          /* X0M0 fd */
+                                        incAbsx16,          /* X0M0 fe */
+                                        sbcLongx16,         /* X0M0 ff */
+                                    },
+                                    {
+                                        brkE,              /* EMUL 00 */
+                                        oraIndirectxE,     /* EMUL 01 */
+                                        cope,              /* EMUL 02 */
+                                        oraSp8,            /* EMUL 03 */
+                                        tsbZp8,            /* EMUL 04 */
+                                        oraZp8,            /* EMUL 05 */
+                                        aslZp8,            /* EMUL 06 */
+                                        oraIndirectLong8,  /* EMUL 07 */
+                                        phpE,              /* EMUL 08 */
+                                        oraImm8,           /* EMUL 09 */
+                                        asla8,             /* EMUL 0a */
+                                        phd,               /* EMUL 0b */
+                                        tsbAbs8,           /* EMUL 0c */
+                                        oraAbs8,           /* EMUL 0d */
+                                        aslAbs8,           /* EMUL 0e */
+                                        oraLong8,          /* EMUL 0f */
+                                        bpl,               /* EMUL 10 */
+                                        oraIndirectyE,     /* EMUL 11 */
+                                        oraIndirect8,      /* EMUL 12 */
+                                        orasIndirecty8,    /* EMUL 13 */
+                                        trbZp8,            /* EMUL 14 */
+                                        oraZpx8,           /* EMUL 15 */
+                                        aslZpx8,           /* EMUL 16 */
+                                        oraIndirectLongy8, /* EMUL 17 */
+                                        clc,               /* EMUL 18 */
+                                        oraAbsy8,          /* EMUL 19 */
+                                        inca8,             /* EMUL 1a */
+                                        tcs,               /* EMUL 1b */
+                                        trbAbs8,           /* EMUL 1c */
+                                        oraAbsx8,          /* EMUL 1d */
+                                        aslAbsx8,          /* EMUL 1e */
+                                        oraLongx8,         /* EMUL 1f */
+                                        jsrE,              /* EMUL 20 */
+                                        andIndirectxE,     /* EMUL 21 */
+                                        jslE,              /* EMUL 22 */
+                                        andSp8,            /* EMUL 23 */
+                                        bitZp8,            /* EMUL 24 */
+                                        andZp8,            /* EMUL 25 */
+                                        rolZp8,            /* EMUL 26 */
+                                        andIndirectLong8,  /* EMUL 27 */
+                                        plpE,              /* EMUL 28 */
+                                        andImm8,           /* EMUL 29 */
+                                        rola8,             /* EMUL 2a */
+                                        pld,               /* EMUL 2b */
+                                        bitAbs8,           /* EMUL 2c */
+                                        andAbs8,           /* EMUL 2d */
+                                        rolAbs8,           /* EMUL 2e */
+                                        andLong8,          /* EMUL 2f */
+                                        bmi,               /* EMUL 30 */
+                                        andIndirectyE,     /* EMUL 31 */
+                                        andIndirect8,      /* EMUL 32 */
+                                        andsIndirecty8,    /* EMUL 33 */
+                                        bitZpx8,           /* EMUL 34 */
+                                        andZpx8,           /* EMUL 35 */
+                                        rolZpx8,           /* EMUL 36 */
+                                        andIndirectLongy8, /* EMUL 37 */
+                                        sec,               /* EMUL 38 */
+                                        andAbsy8,          /* EMUL 39 */
+                                        deca8,             /* EMUL 3a */
+                                        tsc,               /* EMUL 3b */
+                                        bitAbsx8,          /* EMUL 3c */
+                                        andAbsx8,          /* EMUL 3d */
+                                        rolAbsx8,          /* EMUL 3e */
+                                        andLongx8,         /* EMUL 3f */
+                                        rtiE,              /* EMUL 40 */
+                                        eorIndirectxE,     /* EMUL 41 */
+                                        wdm,               /* EMUL 42 */
+                                        eorSp8,            /* EMUL 43 */
+                                        mvp,               /* EMUL 44 */
+                                        eorZp8,            /* EMUL 45 */
+                                        lsrZp8,            /* EMUL 46 */
+                                        eorIndirectLong8,  /* EMUL 47 */
+                                        phaE,              /* EMUL 48 */
+                                        eorImm8,           /* EMUL 49 */
+                                        lsra8,             /* EMUL 4a */
+                                        phke,              /* EMUL 4b */
+                                        jmp,               /* EMUL 4c */
+                                        eorAbs8,           /* EMUL 4d */
+                                        lsrAbs8,           /* EMUL 4e */
+                                        eorLong8,          /* EMUL 4f */
+                                        bvc,               /* EMUL 50 */
+                                        eorIndirectyE,     /* EMUL 51 */
+                                        eorIndirect8,      /* EMUL 52 */
+                                        eorsIndirecty8,    /* EMUL 53 */
+                                        mvn,               /* EMUL 54 */
+                                        eorZpx8,           /* EMUL 55 */
+                                        lsrZpx8,           /* EMUL 56 */
+                                        eorIndirectLongy8, /* EMUL 57 */
+                                        cli,               /* EMUL 58 */
+                                        eorAbsy8,          /* EMUL 59 */
+                                        phyE,              /* EMUL 5a */
+                                        tcd,               /* EMUL 5b */
+                                        jmplong,           /* EMUL 5c */
+                                        eorAbsx8,          /* EMUL 5d */
+                                        lsrAbsx8,          /* EMUL 5e */
+                                        eorLongx8,         /* EMUL 5f */
+                                        rtsE,              /* EMUL 60 */
+                                        adcIndirectxE,     /* EMUL 61 */
+                                        per,               /* EMUL 62 */
+                                        adcSp8,            /* EMUL 63 */
+                                        stzZp8,            /* EMUL 64 */
+                                        adcZp8,            /* EMUL 65 */
+                                        rorZp8,            /* EMUL 66 */
+                                        adcIndirectLong8,  /* EMUL 67 */
+                                        plaE,              /* EMUL 68 */
+                                        adcImm8,           /* EMUL 69 */
+                                        rora8,             /* EMUL 6a */
+                                        rtlE,              /* EMUL 6b */
+                                        jmpind,            /* EMUL 6c */
+                                        adcAbs8,           /* EMUL 6d */
+                                        rorAbs8,           /* EMUL 6e */
+                                        adcLong8,          /* EMUL 6f */
+                                        bvs,               /* EMUL 70 */
+                                        adcIndirectyE,     /* EMUL 71 */
+                                        adcIndirect8,      /* EMUL 72 */
+                                        adcsIndirecty8,    /* EMUL 73 */
+                                        stzZpx8,           /* EMUL 74 */
+                                        adcZpx8,           /* EMUL 75 */
+                                        rorZpx8,           /* EMUL 76 */
+                                        adcIndirectLongy8, /* EMUL 77 */
+                                        sei,               /* EMUL 78 */
+                                        adcAbsy8,          /* EMUL 79 */
+                                        plyE,              /* EMUL 7a */
+                                        tdc,               /* EMUL 7b */
+                                        jmpindx,           /* EMUL 7c */
+                                        adcAbsx8,          /* EMUL 7d */
+                                        rorAbsx8,          /* EMUL 7e */
+                                        adcLongx8,         /* EMUL 7f */
+                                        bra,               /* EMUL 80 */
+                                        staIndirectxE,     /* EMUL 81 */
+                                        brl,               /* EMUL 82 */
+                                        staSp8,            /* EMUL 83 */
+                                        styZp8,            /* EMUL 84 */
+                                        staZp8,            /* EMUL 85 */
+                                        stxZp8,            /* EMUL 86 */
+                                        staIndirectLong8,  /* EMUL 87 */
+                                        dey8,              /* EMUL 88 */
+                                        bitImm8,           /* EMUL 89 */
+                                        txa8,              /* EMUL 8a */
+                                        phbe,              /* EMUL 8b */
+                                        styAbs8,           /* EMUL 8c */
+                                        staAbs8,           /* EMUL 8d */
+                                        stxAbs8,           /* EMUL 8e */
+                                        staLong8,          /* EMUL 8f */
+                                        bcc,               /* EMUL 90 */
+                                        staIndirectyE,     /* EMUL 91 */
+                                        staIndirect8,      /* EMUL 92 */
+                                        staSIndirecty8,    /* EMUL 93 */
+                                        styZpx8,           /* EMUL 94 */
+                                        staZpx8,           /* EMUL 95 */
+                                        stxZpy8,           /* EMUL 96 */
+                                        staIndirectLongy8, /* EMUL 97 */
+                                        tya8,              /* EMUL 98 */
+                                        staAbsy8,          /* EMUL 99 */
+                                        txs8,              /* EMUL 9a */
+                                        txy8,              /* EMUL 9b */
+                                        stzAbs8,           /* EMUL 9c */
+                                        staAbsx8,          /* EMUL 9d */
+                                        stzAbsx8,          /* EMUL 9e */
+                                        staLongx8,         /* EMUL 9f */
+                                        ldyImm8,           /* EMUL a0 */
+                                        ldaIndirectxE,     /* EMUL a1 */
+                                        ldxImm8,           /* EMUL a2 */
+                                        ldaSp8,            /* EMUL a3 */
+                                        ldyZp8,            /* EMUL a4 */
+                                        ldaZp8,            /* EMUL a5 */
+                                        ldxZp8,            /* EMUL a6 */
+                                        ldaIndirectLong8,  /* EMUL a7 */
+                                        tay8,              /* EMUL a8 */
+                                        ldaImm8,           /* EMUL a9 */
+                                        tax8,              /* EMUL aa */
+                                        plbe,              /* EMUL ab */
+                                        ldyAbs8,           /* EMUL ac */
+                                        ldaAbs8,           /* EMUL ad */
+                                        ldxAbs8,           /* EMUL ae */
+                                        ldaLong8,          /* EMUL af */
+                                        bcs,               /* EMUL b0 */
+                                        ldaIndirectyE,     /* EMUL b1 */
+                                        ldaIndirect8,      /* EMUL b2 */
+                                        ldaSIndirecty8,    /* EMUL b3 */
+                                        ldyZpx8,           /* EMUL b4 */
+                                        ldaZpx8,           /* EMUL b5 */
+                                        ldxZpy8,           /* EMUL b6 */
+                                        ldaIndirectLongy8, /* EMUL b7 */
+                                        clv,               /* EMUL b8 */
+                                        ldaAbsy8,          /* EMUL b9 */
+                                        tsx8,              /* EMUL ba */
+                                        tyx8,              /* EMUL bb */
+                                        ldyAbsx8,          /* EMUL bc */
+                                        ldaAbsx8,          /* EMUL bd */
+                                        ldxAbsy8,          /* EMUL be */
+                                        ldaLongx8,         /* EMUL bf */
+                                        cpyImm8,           /* EMUL c0 */
+                                        cmpIndirectxE,     /* EMUL c1 */
+                                        rep65816,          /* EMUL c2 */
+                                        cmpSp8,            /* EMUL c3 */
+                                        cpyZp8,            /* EMUL c4 */
+                                        cmpZp8,            /* EMUL c5 */
+                                        decZp8,            /* EMUL c6 */
+                                        cmpIndirectLong8,  /* EMUL c7 */
+                                        iny8,              /* EMUL c8 */
+                                        cmpImm8,           /* EMUL c9 */
+                                        dex8,              /* EMUL ca */
+                                        wai,               /* EMUL cb */
+                                        cpyAbs8,           /* EMUL cc */
+                                        cmpAbs8,           /* EMUL cd */
+                                        decAbs8,           /* EMUL ce */
+                                        cmpLong8,          /* EMUL cf */
+                                        bne,               /* EMUL d0 */
+                                        cmpIndirectyE,     /* EMUL d1 */
+                                        cmpIndirect8,      /* EMUL d2 */
+                                        cmpsIndirecty8,    /* EMUL d3 */
+                                        pei,               /* EMUL d4 */
+                                        cmpZpx8,           /* EMUL d5 */
+                                        decZpx8,           /* EMUL d6 */
+                                        cmpIndirectLongy8, /* EMUL d7 */
+                                        cld,               /* EMUL d8 */
+                                        cmpAbsy8,          /* EMUL d9 */
+                                        phxE,              /* EMUL da */
+                                        stp,               /* EMUL db */
+                                        jmlind,            /* EMUL dc */
+                                        cmpAbsx8,          /* EMUL dd */
+                                        decAbsx8,          /* EMUL de */
+                                        cmpLongx8,         /* EMUL df */
+                                        cpxImm8,           /* EMUL e0 */
+                                        sbcIndirectxE,     /* EMUL e1 */
+                                        sep,               /* EMUL e2 */
+                                        sbcSp8,            /* EMUL e3 */
+                                        cpxZp8,            /* EMUL e4 */
+                                        sbcZp8,            /* EMUL e5 */
+                                        incZp8,            /* EMUL e6 */
+                                        sbcIndirectLong8,  /* EMUL e7 */
+                                        inx8,              /* EMUL e8 */
+                                        sbcImm8,           /* EMUL e9 */
+                                        nop,               /* EMUL ea */
+                                        xba,               /* EMUL eb */
+                                        cpxAbs8,           /* EMUL ec */
+                                        sbcAbs8,           /* EMUL ed */
+                                        incAbs8,           /* EMUL ee */
+                                        sbcLong8,          /* EMUL ef */
+                                        beq,               /* EMUL f0 */
+                                        sbcIndirectyE,     /* EMUL f1 */
+                                        sbcIndirect8,      /* EMUL f2 */
+                                        sbcsIndirecty8,    /* EMUL f3 */
+                                        pea,               /* EMUL f4 */
+                                        sbcZpx8,           /* EMUL f5 */
+                                        incZpx8,           /* EMUL f6 */
+                                        sbcIndirectLongy8, /* EMUL f7 */
+                                        sed,               /* EMUL f8 */
+                                        sbcAbsy8,          /* EMUL f9 */
+                                        plxE,              /* EMUL fa */
+                                        xce,               /* EMUL fb */
+                                        jsrIndxE,          /* EMUL fc */
+                                        sbcAbsx8,          /* EMUL fd */
+                                        incAbsx8,          /* EMUL fe */
+                                        sbcLongx8,         /* EMUL ff */
+                                    }};
 
 /*Functions*/
 
@@ -5618,10 +5649,13 @@ static void updatecpumode(void)
 {
     int mode;
 
-    if (p.e) {
+    if (p.e)
+    {
         mode = 4;
         x.b.h = y.b.h = 0;
-    } else {
+    }
+    else
+    {
         mode = 0;
         if (!p.m)
             mode |= 1;
@@ -5637,9 +5671,9 @@ void w65816_reset(void)
 {
     def = 1;
     // This test is rather academic as def is 1 at this point
-    //if (def || !(banking & 4))
+    // if (def || !(banking & 4))
     //    w65816mask = 0xFFFF;
-    //else
+    // else
     //    w65816mask = 0x7FFFF;
     w65816mask = 0xFFFF;
     pbr = dbr = 0;
@@ -5655,8 +5689,8 @@ void w65816_reset(void)
 
 void w65816_close(void)
 {
-   //    if (w65816ram)
-   //        free(w65816ram);
+    //    if (w65816ram)
+    //        free(w65816ram);
 }
 
 #if 0
@@ -5757,17 +5791,20 @@ static void nmi65816(void)
     if (inwai)
         pc++;
     inwai = 0;
-    if (!p.e) {
-        writemem(s.w--, (uint8_t) (pbr >> 16));
-        writemem(s.w--, (uint8_t) (pc >> 8));
+    if (!p.e)
+    {
+        writemem(s.w--, (uint8_t)(pbr >> 16));
+        writemem(s.w--, (uint8_t)(pc >> 8));
         writemem(s.w--, pc & 0xFFu);
         writemem(s.w--, pack_flags());
         pc = readmemw((w65816nvb << 16) | 0xFFEA);
         pbr = 0;
         p.i = 1;
         p.d = 0;
-    } else {
-        writemem(s.w, (uint8_t) (pc >> 8));
+    }
+    else
+    {
+        writemem(s.w, (uint8_t)(pc >> 8));
         s.b.l--;
         writemem(s.w, pc & 0xFFu);
         s.b.l--;
@@ -5785,7 +5822,8 @@ static void irq65816(void)
     readmem(pbr | pc);
     cycles--;
     clockspc(6);
-    if (inwai && p.i) {
+    if (inwai && p.i)
+    {
         pc++;
         inwai = 0;
         return;
@@ -5793,16 +5831,19 @@ static void irq65816(void)
     if (inwai)
         pc++;
     inwai = 0;
-    if (!p.e) {
-        writemem(s.w--, (uint8_t) (pbr >> 16));
-        writemem(s.w--, (uint8_t) ( pc >> 8));
-        writemem(s.w--,  pc & 0xFFu);
+    if (!p.e)
+    {
+        writemem(s.w--, (uint8_t)(pbr >> 16));
+        writemem(s.w--, (uint8_t)(pc >> 8));
+        writemem(s.w--, pc & 0xFFu);
         writemem(s.w--, pack_flags());
         pc = readmemw((w65816nvb << 16) | 0xFFEEu);
         pbr = 0;
         p.i = 1;
         p.d = 0;
-    } else {
+    }
+    else
+    {
         writemem(s.w, (uint8_t)(pc >> 8));
         s.b.l--;
         writemem(s.w, pc & 0xFFu);
@@ -5822,7 +5863,8 @@ void w65816_exec(int tubecycles)
 
     cycles = tubecycles;
 
-    while (cycles > 0) {
+    while (cycles > 0)
+    {
         ia = pbr | pc;
         toldpc = ia;
         pc++;
@@ -5833,10 +5875,13 @@ void w65816_exec(int tubecycles)
         opcode = readmem(ia);
         modeptr[opcode]();
         wins++;
-        if ((tube_irq & NMI_BIT)) {
+        if ((tube_irq & NMI_BIT))
+        {
             nmi65816();
             tube_ack_nmi();
-        } else if ((tube_irq & IRQ_BIT) && !p.i) {
+        }
+        else if ((tube_irq & IRQ_BIT) && !p.i)
+        {
             irq65816();
         }
     }

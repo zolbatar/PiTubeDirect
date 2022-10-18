@@ -1,11 +1,12 @@
 #ifndef INSTRUCTIONS_H
 #define INSTRUCTIONS_H
 #include "buffer.h"
-#include "../containers/list.h"
 
-typedef struct {
+typedef struct
+{
 	uint8_t opcode;
-	union {
+	union
+	{
 		uint32_t index;
 		uint32_t alignment;
 		//		uint32_t label;
@@ -18,7 +19,14 @@ typedef struct {
 	uint32_t offset;
 } instruction_t;
 
-uint8_t process_instruction(list code, buffer_t* bf);
+static int instruction_t_cmp(const instruction_t *a, const instruction_t *b) {
+	return a == b;
+}
+#define i_val instruction_t
+#define i_cmp instruction_t_cmp
+#include "../stc/cvec.h"
+
+uint8_t process_instruction(cvec_instruction_t *code, buffer_t *bf);
 
 #define INSTRUCTION_UNREACHABLE                0x00
 #define INSTRUCTION_NOP                        0x01
@@ -65,6 +73,7 @@ uint8_t process_instruction(list code, buffer_t* bf);
 #define INSTRUCTION_I64_STORE32                0x3E
 
 #define INSTRUCTION_I32_CONST                  0x41
+#define INSTRUCTION_I64_CONST                  0x42
 
 #define INSTRUCTION_I32_ADD                    0x6A
 #define INSTRUCTION_I32_SUB                    0x6B

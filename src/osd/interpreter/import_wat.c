@@ -4,20 +4,19 @@
 #include "wasm/sections/sections.h"
 #include "wasm_shared.h"
 
-void section_type(buffer_t* bf, uint32_t size, wasm_t* wat);
-void section_function(buffer_t* bf, uint32_t size, wasm_t* wat);
-void section_memory(buffer_t* bf, uint32_t size, wasm_t* wat);
-void section_global(buffer_t* bf, uint32_t size, wasm_t* wat);
-void section_import(buffer_t* bf, uint32_t size, wasm_t* wat);
-void section_export(buffer_t* bf, uint32_t size, wasm_t* wat);
-void section_code(buffer_t* bf, uint32_t size, wasm_t* wat);
-void section_custom(buffer_t* bf, uint32_t size, wasm_t* wat);
-void section_data(buffer_t* bf, uint32_t size, wasm_t* wat);
+void section_type(buffer_t *bf, uint32_t size, wasm_t *wat);
+void section_function(buffer_t *bf, uint32_t size, wasm_t *wat);
+void section_memory(buffer_t *bf, uint32_t size, wasm_t *wat);
+void section_global(buffer_t *bf, uint32_t size, wasm_t *wat);
+void section_import(buffer_t *bf, uint32_t size, wasm_t *wat);
+void section_export(buffer_t *bf, uint32_t size, wasm_t *wat);
+void section_code(buffer_t *bf, uint32_t size, wasm_t *wat);
+void section_custom(buffer_t *bf, uint32_t size, wasm_t *wat);
+void section_data(buffer_t *bf, uint32_t size, wasm_t *wat);
 
-void import_wat(wasm_t* wat, buffer_t* bf)
-{
+void import_wat(wasm_t *wat, buffer_t *bf) {
 	// Now to process each section
-	while (bf->pos<bf->len) {
+	while (bf->pos < bf->len) {
 		uint8_t section = read_byte_int(bf);
 		uint32_t sz = read_leb128_32(bf);
 		switch (section) {

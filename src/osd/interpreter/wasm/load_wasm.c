@@ -99,7 +99,7 @@ int32_t read_sleb128_32(buffer_t* fp)
 	int64_t r;
 	size_t rd = read_sleb128_to_int64(&fp->buffer[fp->pos], &fp->buffer[fp->len-1], &r);
 	if (rd==0) {
-		fprintf(stderr, "Total fail reading leb128\n");
+		print("Total fail reading leb128\n");
 		exit(1);
 	}
 	fp->pos += rd;
