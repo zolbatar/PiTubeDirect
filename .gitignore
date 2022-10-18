@@ -1,5 +1,6 @@
 *~
 #*
+src/CMakeFiles/
 src/scripts/CMakeCache.txt
 src/scripts/CMakeFiles/
 src/scripts/Makefile
@@ -79,3 +80,5 @@ src/scripts/cov-int/tmp/emit-db-cache.lock
 src/scripts/cov-int/tu-timings.txt
 src/scripts/myproject.tgz
 *.su
+src/.DS_Store
+src/osd/interpreter/.DS_Store

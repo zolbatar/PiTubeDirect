@@ -258,6 +258,30 @@ file( GLOB copro_f100_files
     f100/tuberom.c
 )
 
+# OS/D
+file( GLOB copro_osd_files
+    copro-osd.h
+    copro-osd.c
+    osd/osd.c
+    osd/osd.h
+    osd/osd-tube.h
+    osd/osd-tube.c
+    osd/osd-vdu.h
+    osd/osd-vdu.c
+
+    osd/interpreter/wasm.c osd/interpreter/build_vm.c osd/interpreter/run_vm.c osd/interpreter/kernel.c osd/interpreter/wasm_shared.h osd/interpreter/printf.c
+
+    osd/interpreter/wasm/sections/sections.h
+    osd/interpreter/wasm/sections/section_type.c osd/interpreter/wasm/sections/section_function.c osd/interpreter/wasm/sections/section_memory.c 
+    osd/interpreter/wasm/sections/section_global.c osd/interpreter/wasm/sections/section_export.c
+    osd/interpreter/wasm/sections/section_code.c osd/interpreter/wasm/sections/section_custom.c osd/interpreter/wasm/sections/section_data.c 
+    osd/interpreter/wasm/sections/section_import.c
+
+    osd/interpreter/wasm/load_wasm.c osd/interpreter/import_wat.c osd/interpreter/wasm/expression.c osd/interpreter/wasm/read_instruction.c
+    osd/interpreter/wasm/buffer.h osd/interpreter/wasm/instructions.h osd/interpreter/wasm/load_wasm.h osd/interpreter/wasm/leb128.h
+
+    osd/interpreter/containers/list.c osd/interpreter/containers/vector.c
+)
 
 # PDP 11
 file( GLOB copro_pdp11_files
@@ -407,6 +431,7 @@ else()
             ${copro_pdp11_files}
             ${copro_null_files}
             ${copro_arm_files}
+            ${copro_osd_files}
             ${debugger_files}
         )
 
@@ -433,6 +458,7 @@ else()
             ${copro_pdp11_files}
             ${copro_null_files}
             ${copro_arm_files}
+            ${copro_osd_files}
         )
 
     endif()
