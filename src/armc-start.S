@@ -475,7 +475,7 @@ _init_continue:
 
     // 2. Set the FPEXC EN bit to enable the NEON MPE:
     mov     r0, #0x40000000
-    vmsr    fpexc, r0
+    vmsr    fpexc, r0 
 
     bl      run_core
 #endif

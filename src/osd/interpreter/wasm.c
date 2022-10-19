@@ -82,9 +82,6 @@ void WASM_import() {
 void WASM_build() {
 	// Work out allocation required for global data and the stack, this is the start of heap value
 	heap = start_of_heap(wat);
-	if (heap == 0) {
-		print("No heap space detected\n");
-	}
 
 	if (wat->num_memories > 0) {
 		data_space_needed = wat->section_memories[0].min * K64;

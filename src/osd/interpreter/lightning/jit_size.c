@@ -102,11 +102,7 @@ jit_word_t _jit_get_size(jit_state_t* _jit)
 	for (size = JIT_INSTR_MAX, node = _jitc->head; node; node = node->next)
 		size += _szs[node->code];
 
-#ifdef __aarch64__
 	return ((size + 4095) & -4096);
-#else
-	return ((size + 63) & -64);
-#endif
 }
 #endif
 

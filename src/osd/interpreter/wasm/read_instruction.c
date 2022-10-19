@@ -4,7 +4,7 @@
 
 void debug_instruction(const char *name, uint8_t opcode, uint32_t location) {
 	if (trace >= LogDetail)
-		print("    Opcode [0X%02X %s] at 0X%07X\n", opcode, name, location);
+		print("    Opcode [0X%02X %s] at 0x%07X\n", opcode, name, location);
 }
 
 uint8_t process_instruction(cvec_instruction_t *code, buffer_t *bf) {
