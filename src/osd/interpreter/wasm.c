@@ -7,7 +7,7 @@
 // Current state
 wasm_t *wat;
 buffer_t *bf;
-uint8_t *OSD_RAM;
+uint8_t *heap_space;
 size_t data_space_needed;
 uint32_t heap;
 error_level_t trace = LogDetail;
@@ -83,18 +83,22 @@ void WASM_build() {
 	// Work out allocation required for global data and the stack, this is the start of heap value
 	heap = start_of_heap(wat);
 	if (heap == 0) {
-		print("Unable to figure out start of heap space");
-		exit(1);
+		print("No heap space detected\n");
 	}
 
-	data_space_needed = wat->section_memories[0].min * K64;
+	if (wat->num_memories > 0) {
+		data_space_needed = wat->section_memories[0].min * K64;
+	}
+	else {
+		data_space_needed = 0;
+	}
 	if (trace >= LogInfo)
-		print("%d 64K page(s) of data space requested\n", wat->section_memories[0].min);
-	OSD_RAM = (uint8_t *)malloc(data_space_needed);
-	memset(OSD_RAM, 0, data_space_needed);
-	build_vm(wat, OSD_RAM, data_space_needed);
+		print("%dKB of data space requested\n", data_space_needed);
+	heap_space = (uint8_t *)malloc(data_space_needed);
+	memset(heap_space, 0, data_space_needed);
+	build_vm(wat, heap_space, data_space_needed);
 }
 
 void WASM_run() {
-	run_vm(wat, OSD_RAM, data_space_needed, heap);
+	run_vm(wat, heap_space, data_space_needed, heap);
 }

@@ -1,0 +1,3 @@
+[submodule "src/osd/interpreter/capstone"]
+	path = src/osd/interpreter/capstone
+	url = https://github.com/capstone-engine/capstone.git

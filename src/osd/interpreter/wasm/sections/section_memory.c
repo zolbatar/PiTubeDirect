@@ -20,6 +20,6 @@ void section_memory(buffer_t* bf, uint32_t size, wasm_t* wat)
 		p->min = read_leb128_32(bf);
 		if (p->has_max)
 			p->max = read_leb128_32(bf);
-		printf("Memory section %d: %d/%d\n", p->min, p->max);
+		printf("Memory section %d: %d/%d\n", i, p->min, p->max);
 	}
 }

@@ -28,7 +28,7 @@ void build_vm(wasm_t *wat, uint8_t *RAM, size_t RAM_size) {
 	// Compile all init sections for globals first
 	for (uint32_t i = 0; i < wat->num_globals; i++) {
 		section_global_t *t = &wat->section_globals[i];
-		instruction_t *instruction = cvec_instruction_t_at(&t->init, 0);
+		const cvec_instruction_t_value *instruction = cvec_instruction_t_at(&t->init, 0);
 		switch (t->type) {
 			case TYPE_I32:
 				t->value_i32 = instruction->value_i32;
