@@ -35,6 +35,7 @@
 
 #include "copro-armnative.h"
 #include "armbasic.h"
+#include "DaricBlob.h"
 
 #include "rpi-aux.h"
 #include "rpi-armtimer.h"
@@ -77,16 +78,18 @@ Environment_type *env = &defaultEnvironment;
  ***********************************************************/
 
 // Note: this will be executed in user mode
-static void defaultErrorHandler(unsigned int r0) {
-  // TODO: Consider resetting the user stack?
-  const ErrorBuffer_type *eb = &defaultErrorBuffer;
-  if (DEBUG_ARM) {
-    printf("Error = %p %02x %s\r\n", eb->errorAddr, eb->errorBlock.errorNum, eb->errorBlock.errorMsg);
-  }
-  OS_Write0(eb->errorBlock.errorMsg);
-  OS_WriteC(10);
-  OS_WriteC(13);
-  OS_Exit();
+static void defaultErrorHandler(unsigned int r0)
+{
+    // TODO: Consider resetting the user stack?
+    const ErrorBuffer_type *eb = &defaultErrorBuffer;
+    if (DEBUG_ARM)
+    {
+        printf("Error = %p %02x %s\r\n", eb->errorAddr, eb->errorBlock.errorNum, eb->errorBlock.errorMsg);
+    }
+    OS_Write0(eb->errorBlock.errorMsg);
+    OS_WriteC(10);
+    OS_WriteC(13);
+    OS_Exit();
 }
 
 // Entered with R11 bit 6 as escape status
@@ -96,11 +99,13 @@ static void defaultErrorHandler(unsigned int r0) {
 
 // Note, the way we invoke this via the _escape_handler_wrapper will
 // work, because the flag will also still be in r0.
-static void defaultEscapeHandler(unsigned int flag, unsigned int workspace) {
-  if (DEBUG_ARM) {
-    printf("Escape flag = %02x\r\n", flag);
-  }
-  *((unsigned int *)(env->handler[ESCAPE_HANDLER].address)) = flag;
+static void defaultEscapeHandler(unsigned int flag, unsigned int workspace)
+{
+    if (DEBUG_ARM)
+    {
+        printf("Escape flag = %02x\r\n", flag);
+    }
+    *((unsigned int *)(env->handler[ESCAPE_HANDLER].address)) = flag;
 }
 
 // Entered with R0, R1 and R2 containing the A, X and Y parameters. R0,
@@ -109,99 +114,116 @@ static void defaultEscapeHandler(unsigned int flag, unsigned int workspace) {
 // R13 contains the IRQ handling routine stack. When you return to the
 // system LDMFD R13!, (R0,R1,R2,R11,R12,PC}^ will be executed. If R12
 // contains 1 on return then the Callback will be used.
-static void defaultEventHandler(unsigned int a, unsigned int x, unsigned int y) {
-  if (DEBUG_ARM) {
-    printf("Event: A=%02x X=%02x Y=%02x\r\n", a, x, y);
-  }
+static void defaultEventHandler(unsigned int a, unsigned int x, unsigned int y)
+{
+    if (DEBUG_ARM)
+    {
+        printf("Event: A=%02x X=%02x Y=%02x\r\n", a, x, y);
+    }
 }
 
 // This should be called in USR mode whenever OS_Exit or OS_ExitAndDie is called.
-static void defaultExitHandler() {
-  if (DEBUG_ARM) {
-    printf("Invoking default exit handler\r\n");
-  }
-  // Avoid re-entering ARM Basic
-  armbasic = 0;
-  // Move back to supervisor mode
-  swi(SWI_OS_EnterOS);
-  // Jump back to the command prompt
-  longjmp(enterOS, 1);
+static void defaultExitHandler()
+{
+    if (DEBUG_ARM)
+    {
+        printf("Invoking default exit handler\r\n");
+    }
+    // Avoid re-entering ARM Basic
+    armbasic = 0;
+    // Move back to supervisor mode
+    swi(SWI_OS_EnterOS);
+    // Jump back to the command prompt
+    longjmp(enterOS, 1);
 }
 
-static void defaultUndefinedInstructionHandler() {
-  handler_not_implemented("UNDEFINED_INSTRUCTION_HANDLER");
+static void defaultUndefinedInstructionHandler()
+{
+    handler_not_implemented("UNDEFINED_INSTRUCTION_HANDLER");
 }
 
-static void defaultPrefetchAbortHandler() {
-  handler_not_implemented("PREFETCH_ABORT_HANDLER");
+static void defaultPrefetchAbortHandler()
+{
+    handler_not_implemented("PREFETCH_ABORT_HANDLER");
 }
 
-static void defaultDataAbortHandler() {
-  handler_not_implemented("DATA_ABORT_HANDLER");
+static void defaultDataAbortHandler()
+{
+    handler_not_implemented("DATA_ABORT_HANDLER");
 }
 
-static void defaultAddressExceptionHandler() {
-  handler_not_implemented("ADDRESS_EXCEPTION_HANDLER");
+static void defaultAddressExceptionHandler()
+{
+    handler_not_implemented("ADDRESS_EXCEPTION_HANDLER");
 }
 
-static void defaultOtherExceptionHandler() {
-  handler_not_implemented("OTHER_EXCEPTIONS_HANDLER");
+static void defaultOtherExceptionHandler()
+{
+    handler_not_implemented("OTHER_EXCEPTIONS_HANDLER");
 }
 
-static void defaultCallbackHandler() {
-  handler_not_implemented("CALLBACK_HANDLER");
+static void defaultCallbackHandler()
+{
+    handler_not_implemented("CALLBACK_HANDLER");
 }
 
-static void defaultUnusedSWIHandler() {
-  handler_not_implemented("UNUSED_SWI_HANDLER");
+static void defaultUnusedSWIHandler()
+{
+    handler_not_implemented("UNUSED_SWI_HANDLER");
 }
 
-static void defaultExceptionRegistersHandler() {
-  handler_not_implemented("EXCEPTION_REGISTERS_HANDLER");
+static void defaultExceptionRegistersHandler()
+{
+    handler_not_implemented("EXCEPTION_REGISTERS_HANDLER");
 }
 
-static void defaultUpcallHandler() {
-  handler_not_implemented("UPCALL_HANDLER");
+static void defaultUpcallHandler()
+{
+    handler_not_implemented("UPCALL_HANDLER");
 }
 
 /***********************************************************
  * Initialize the envorinment
  ***********************************************************/
 
-static void initEnv() {
-  defaultEscapeFlag = 0;
-  unsigned int i;
-  for (i = 0; i < sizeof(env->commandBuffer); i++) {
-    env->commandBuffer[i] = 0;
-  }
-  for (i = 0; i < sizeof(env->timeBuffer); i++) {
-    env->timeBuffer[i] = 0;
-  }
-  for (i = 0; i < NUM_HANDLERS; i++) {
-    env->handler[i].address = (void *)0;
-    env->handler[i].r12 = 0xAAAAAAAA;
-  }
-  // Handlers that are code points
-  env->handler[  UNDEFINED_INSTRUCTION_HANDLER].handler = defaultUndefinedInstructionHandler;
-  env->handler[         PREFETCH_ABORT_HANDLER].handler = defaultPrefetchAbortHandler;
-  env->handler[             DATA_ABORT_HANDLER].handler = defaultDataAbortHandler;
-  env->handler[      ADDRESS_EXCEPTION_HANDLER].handler = defaultAddressExceptionHandler;
-  env->handler[       OTHER_EXCEPTIONS_HANDLER].handler = defaultOtherExceptionHandler;
-  env->handler[                  ERROR_HANDLER].handler = defaultErrorHandler;
-  env->handler[                  ERROR_HANDLER].address = &defaultErrorBuffer;
-  env->handler[               CALLBACK_HANDLER].handler = defaultCallbackHandler;
-  env->handler[                 ESCAPE_HANDLER].handler = defaultEscapeHandler;
-  env->handler[                 ESCAPE_HANDLER].address = &defaultEscapeFlag;
-  env->handler[                  EVENT_HANDLER].handler = defaultEventHandler;
-  env->handler[                   EXIT_HANDLER].handler = defaultExitHandler;
-  env->handler[             UNUSED_SWI_HANDLER].handler = defaultUnusedSWIHandler;
-  env->handler[    EXCEPTION_REGISTERS_HANDLER].handler = defaultExceptionRegistersHandler;
-  env->handler[                 UPCALL_HANDLER].handler = defaultUpcallHandler;
+static void initEnv()
+{
+    defaultEscapeFlag = 0;
+    unsigned int i;
+    for (i = 0; i < sizeof(env->commandBuffer); i++)
+    {
+        env->commandBuffer[i] = 0;
+    }
+    for (i = 0; i < sizeof(env->timeBuffer); i++)
+    {
+        env->timeBuffer[i] = 0;
+    }
+    for (i = 0; i < NUM_HANDLERS; i++)
+    {
+        env->handler[i].address = (void *)0;
+        env->handler[i].r12 = 0xAAAAAAAA;
+    }
+    // Handlers that are code points
+    env->handler[UNDEFINED_INSTRUCTION_HANDLER].handler = defaultUndefinedInstructionHandler;
+    env->handler[PREFETCH_ABORT_HANDLER].handler = defaultPrefetchAbortHandler;
+    env->handler[DATA_ABORT_HANDLER].handler = defaultDataAbortHandler;
+    env->handler[ADDRESS_EXCEPTION_HANDLER].handler = defaultAddressExceptionHandler;
+    env->handler[OTHER_EXCEPTIONS_HANDLER].handler = defaultOtherExceptionHandler;
+    env->handler[ERROR_HANDLER].handler = defaultErrorHandler;
+    env->handler[ERROR_HANDLER].address = &defaultErrorBuffer;
+    env->handler[CALLBACK_HANDLER].handler = defaultCallbackHandler;
+    env->handler[ESCAPE_HANDLER].handler = defaultEscapeHandler;
+    env->handler[ESCAPE_HANDLER].address = &defaultEscapeFlag;
+    env->handler[EVENT_HANDLER].handler = defaultEventHandler;
+    env->handler[EXIT_HANDLER].handler = defaultExitHandler;
+    env->handler[UNUSED_SWI_HANDLER].handler = defaultUnusedSWIHandler;
+    env->handler[EXCEPTION_REGISTERS_HANDLER].handler = defaultExceptionRegistersHandler;
+    env->handler[UPCALL_HANDLER].handler = defaultUpcallHandler;
 
-  // Handlers where the handler is just data
-  env->handler[           MEMORY_LIMIT_HANDLER].handler = (EnvironmentHandler_type) (200 * 1024 * 1024); // 200MB
-  env->handler[      APPLICATION_SPACE_HANDLER].handler = (EnvironmentHandler_type) (200 * 1024 * 1024); // 200MB
-  env->handler[CURRENTLY_ACTIVE_OBJECT_HANDLER].handler = (EnvironmentHandler_type) (0);
+    // Handlers where the handler is just data
+    env->handler[MEMORY_LIMIT_HANDLER].handler = (EnvironmentHandler_type)(200 * 1024 * 1024);      // 200MB
+    env->handler[APPLICATION_SPACE_HANDLER].handler = (EnvironmentHandler_type)(200 * 1024 * 1024); // 200MB
+    env->handler[CURRENTLY_ACTIVE_OBJECT_HANDLER].handler = (EnvironmentHandler_type)(0);
 }
 
 /***********************************************************
@@ -209,166 +231,183 @@ static void initEnv() {
  ***********************************************************/
 
 // Tube Reset protocol
-static void tube_Reset() {
-  // Send the reset message
-  if (DEBUG_ARM) {
-    printf( "Sending banner\r\n" );
-  }
-  sendString(R1_ID, 0x00, banner);
-  sendByte(R1_ID, 0x00);
-  if (DEBUG_ARM) {
-    printf( "Banner sent, awaiting response\r\n" );
-  }
-  // Wait for the response in R2
-  receiveByte(R2_ID);
-  if (DEBUG_ARM) {
-    printf( "Received response\r\n" );
-  }
+static void tube_Reset()
+{
+    // Send the reset message
+    if (DEBUG_ARM)
+    {
+        printf("Sending banner\r\n");
+    }
+    sendString(R1_ID, 0x00, banner);
+    sendByte(R1_ID, 0x00);
+    if (DEBUG_ARM)
+    {
+        printf("Banner sent, awaiting response\r\n");
+    }
+    // Wait for the response in R2
+    receiveByte(R2_ID);
+    if (DEBUG_ARM)
+    {
+        printf("Received response\r\n");
+    }
 }
-
 
 /***********************************************************
  * Initialize the hardware (in User Mode)
  ***********************************************************/
 
-static int cli_loop() {
-  unsigned int flags=0;
-  int length;
+static int cli_loop()
+{
+    unsigned int flags = 0;
+    int length;
 
-  while( 1 ) {
+    while (1)
+    {
 
-    // In debug mode, print the mode (which should be user mode...)
-    if (DEBUG_ARM) {
-      printf("tube_cli: cpsr=%08x stack=%08x\r\n", _get_cpsr(), _get_stack_pointer());
+        // In debug mode, print the mode (which should be user mode...)
+        if (DEBUG_ARM)
+        {
+            printf("tube_cli: cpsr=%08x stack=%08x\r\n", _get_cpsr(), _get_stack_pointer());
+        }
+
+        // Print the supervisor prompt
+        OS_Write0(prompt);
+
+        // Ask for user input (OSWORD 0)
+        OS_ReadLine(env->commandBuffer, sizeof(env->commandBuffer) - 1, 0x20, 0x7F, &flags, &length);
+
+        // Was it escape
+        if (flags & CARRY_MASK)
+        {
+
+            // Yes, print Escape
+            OS_Write0("\n\rEscape\n\r");
+
+            // Acknowledge escape condition
+            if (DEBUG_ARM)
+            {
+                printf("Acknowledging Escape\r\n");
+            }
+            OS_Byte(0x7e, 0x00, 0x00, NULL, NULL);
+        }
+        else
+        {
+            // No, so execute the command using OSCLI
+            OS_CLI(env->commandBuffer);
+        }
     }
-
-    // Print the supervisor prompt
-    OS_Write0(prompt);
-
-    // Ask for user input (OSWORD 0)
-    OS_ReadLine(env->commandBuffer, sizeof(env->commandBuffer) - 1, 0x20, 0x7F, &flags, &length);
-
-    // Was it escape
-    if (flags & CARRY_MASK) {
-
-      // Yes, print Escape
-      OS_Write0("\n\rEscape\n\r");
-
-      // Acknowledge escape condition
-      if (DEBUG_ARM) {
-        printf("Acknowledging Escape\r\n");
-      }
-      OS_Byte(0x7e, 0x00, 0x00, NULL, NULL);
-
-    } else {
-      // No, so execute the command using OSCLI
-      OS_CLI(env->commandBuffer);
-    }
-  }
-  return 0;
+    return 0;
 }
 
-void copro_armnative_reset() {
-  if (DEBUG_ARM) {
-    printf("Invoking reset handler\r\n");
-  }
-  // Move back to supervisor mode
-  swi(SWI_OS_EnterOS);
-  // Jump back to the boot message
-  longjmp(reboot, 1);
+void copro_armnative_reset()
+{
+    if (DEBUG_ARM)
+    {
+        printf("Invoking reset handler\r\n");
+    }
+    // Move back to supervisor mode
+    swi(SWI_OS_EnterOS);
+    // Jump back to the boot message
+    longjmp(reboot, 1);
 }
 
 /***********************************************************
  * copro_armnative_emulator
  ***********************************************************/
 
-void copro_armnative_emulator() {
-  unsigned int last_break;
+void copro_armnative_emulator()
+{
+    unsigned int last_break;
 
-  // Disable interrupts!
-  _disable_interrupts();
+    // Disable interrupts!
+    _disable_interrupts();
 
-  // Record our copro number
-  last_copro = copro;
+    // Record our copro number
+    last_copro = copro;
 
-  // Active the mailbox
-  copro_armnative_enable_mailbox();
+    // Active the mailbox
+    copro_armnative_enable_mailbox();
 
-  // Default to armbasic off when Co Pro starts
-  armbasic = 0;
+    // Default to armbasic off when Co Pro starts
+    armbasic = 0;
 
-  // When a reset occurs, we want to return to here
-  setjmp(reboot);
+    // When a reset occurs, we want to return to here
+    setjmp(reboot);
 
-  if (copro != last_copro) {
-    // Deactivate the mailbox
-    copro_armnative_disable_mailbox();
-    // Allow another copro to be selected
-    return;
-  }
+    if (copro != last_copro)
+    {
+        // Deactivate the mailbox
+        copro_armnative_disable_mailbox();
+        // Allow another copro to be selected
+        return;
+    }
 
-  swi_modules_init(0);
+    swi_modules_init(0);
 
-  // If vdu=1 in cmdline.txt
-  if (vdu_enabled) {
-     // Reset all the SWI handlers to the default versions
-     fb_set_vdu_device(VDU_BEEB);
-  }
+    // If vdu=1 in cmdline.txt
+    if (vdu_enabled)
+    {
+        // Reset all the SWI handlers to the default versions
+        fb_set_vdu_device(VDU_BEEB);
+    }
 
-  // Create the startup banner
-  sprintf(banner, "Native ARM Co Processor %"PRId32"MHz\r\n\n", get_speed());
+    // Create the startup banner
+    sprintf(banner, "Native ARM Co Processor %" PRId32 "MHz\r\n\n", get_speed());
 
-  // Initialize the environment structure
-  initEnv();
+    // Initialize the environment structure
+    initEnv();
 
-  // Enable interrupts!
-  _enable_interrupts();
+    // Enable interrupts!
+    _enable_interrupts();
 
-  // Inhibit the language transfer to avoid any BASIC programs getting trashed
-  set_ignore_transfer(1);
+    // Inhibit the language transfer to avoid any BASIC programs getting trashed
+    set_ignore_transfer(1);
 
-  // Log ARM performance counters
-  tube_log_performance_counters();
+    // Log ARM performance counters
+    tube_log_performance_counters();
 
-  // Wait for rst become inactive before continuing to execute
-  tube_wait_for_rst_release();
+    // Wait for rst become inactive before continuing to execute
+    tube_wait_for_rst_release();
 
-  // Reset ARM performance counters
-  tube_reset_performance_counters();
+    // Reset ARM performance counters
+    tube_reset_performance_counters();
 
-  // Send reset message
-  tube_Reset();
+    // Send reset message
+    tube_Reset();
 
-  // Re-enable the language transfer
-  set_ignore_transfer(0);
+    // Re-enable the language transfer
+    set_ignore_transfer(0);
 
-  // Always copy ARM Basic into memory (in case it's been corrupted)
-  copy_armbasic();
+    // Always copy ARM Basic into memory (in case it's been corrupted)
+    copy_armbasic();
+    copy_daric();
 
-  // When the default exit handler is called, we return here
-  setjmp(enterOS);
+    // When the default exit handler is called, we return here
+    setjmp(enterOS);
 
-  // Make sure interrupts are enabled!
-  _enable_interrupts();
+    // Make sure interrupts are enabled!
+    _enable_interrupts();
 
-  // Read the last break type
-  OS_Byte(0xfd, 0x00, 0xFF, &last_break, NULL);
+    // Read the last break type
+    OS_Byte(0xfd, 0x00, 0xFF, &last_break, NULL);
 
-  // If hard or power up break, then don't re-enter ARM Basic
-  if ((last_break & 0xff) > 0) {
-     armbasic = 0;
-  }
+    // If hard or power up break, then don't re-enter ARM Basic
+    if ((last_break & 0xff) > 0)
+    {
+        armbasic = 0;
+    }
 
-  // Re-start ARMBASIC if active before reset
-  if (armbasic) {
-     OS_CLI("ARMBASIC");
-  }
+    // Re-start ARMBASIC if active before reset
+    if (armbasic)
+    {
+        OS_CLI("ARMBASIC");
+    }
 
-  // Make sure the reentrant interrupt flag is clear
+    // Make sure the reentrant interrupt flag is clear
 #ifdef USE_REENTRANT_FIQ_HANDLER
-  in_tube_intr_flag = 0;
+    in_tube_intr_flag = 0;
 #endif
 
-  // Execute cli_loop as a normal user program
-  user_exec_fn(cli_loop, 0);
+    // Execute cli_loop as a normal user program
+    user_exec_fn(cli_loop, 0);
 }

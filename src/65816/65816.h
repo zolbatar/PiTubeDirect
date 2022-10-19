@@ -1,7 +1,8 @@
 #ifndef __INC_65816_H
 #define __INC_65816_H
-
-enum register_numbers {
+#include <stdint.h>
+enum register_numbers
+{
     REG_A,
     REG_X,
     REG_Y,
@@ -15,7 +16,7 @@ enum register_numbers {
 
 typedef struct
 {
-    int c,z,i,d,b,v,n,m,ex,e; /*X renamed to EX due to #define conflict*/
+    int c, z, i, d, b, v, n, m, ex, e; /*X renamed to EX due to #define conflict*/
 } w65816p_t;
 
 extern w65816p_t w65816p;

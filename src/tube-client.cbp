@@ -1,0 +1,636 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="tube-client"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="clang"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/Users/daryl/GitHub/PiTubeDirect/src"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/local/bin/gmake -f &quot;/Users/daryl/GitHub/PiTubeDirect/src/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/local/bin/gmake -f &quot;/Users/daryl/GitHub/PiTubeDirect/src/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/local/bin/gmake -f &quot;/Users/daryl/GitHub/PiTubeDirect/src/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/local/bin/gmake -f &quot;/Users/daryl/GitHub/PiTubeDirect/src/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="tube-client">
+				<Option output="/Users/daryl/GitHub/PiTubeDirect/src/tube-client" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/daryl/GitHub/PiTubeDirect/src"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="clang"/>
+				<Compiler>
+					<Add directory="/Users/daryl/GitHub/PiTubeDirect/src"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/local/bin/gmake -f &quot;/Users/daryl/GitHub/PiTubeDirect/src/Makefile&quot;  VERBOSE=1 tube-client"/>
+					<CompileFile command="/usr/local/bin/gmake -f &quot;/Users/daryl/GitHub/PiTubeDirect/src/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/local/bin/gmake -f &quot;/Users/daryl/GitHub/PiTubeDirect/src/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/local/bin/gmake -f &quot;/Users/daryl/GitHub/PiTubeDirect/src/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="tube-client/fast">
+				<Option output="/Users/daryl/GitHub/PiTubeDirect/src/tube-client" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/daryl/GitHub/PiTubeDirect/src"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="clang"/>
+				<Compiler>
+					<Add directory="/Users/daryl/GitHub/PiTubeDirect/src"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/local/bin/gmake -f &quot;/Users/daryl/GitHub/PiTubeDirect/src/Makefile&quot;  VERBOSE=1 tube-client/fast"/>
+					<CompileFile command="/usr/local/bin/gmake -f &quot;/Users/daryl/GitHub/PiTubeDirect/src/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/local/bin/gmake -f &quot;/Users/daryl/GitHub/PiTubeDirect/src/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/local/bin/gmake -f &quot;/Users/daryl/GitHub/PiTubeDirect/src/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="gitversion">
+				<Option working_dir="/Users/daryl/GitHub/PiTubeDirect/src"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/local/bin/gmake -f &quot;/Users/daryl/GitHub/PiTubeDirect/src/Makefile&quot;  VERBOSE=1 gitversion"/>
+					<CompileFile command="/usr/local/bin/gmake -f &quot;/Users/daryl/GitHub/PiTubeDirect/src/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/local/bin/gmake -f &quot;/Users/daryl/GitHub/PiTubeDirect/src/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/local/bin/gmake -f &quot;/Users/daryl/GitHub/PiTubeDirect/src/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/Users/daryl/GitHub/PiTubeDirect/src"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/local/bin/gmake -f &quot;/Users/daryl/GitHub/PiTubeDirect/src/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/local/bin/gmake -f &quot;/Users/daryl/GitHub/PiTubeDirect/src/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/local/bin/gmake -f &quot;/Users/daryl/GitHub/PiTubeDirect/src/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/local/bin/gmake -f &quot;/Users/daryl/GitHub/PiTubeDirect/src/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/Users/daryl/GitHub/PiTubeDirect/src"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/local/bin/gmake -f &quot;/Users/daryl/GitHub/PiTubeDirect/src/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/local/bin/gmake -f &quot;/Users/daryl/GitHub/PiTubeDirect/src/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/local/bin/gmake -f &quot;/Users/daryl/GitHub/PiTubeDirect/src/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/local/bin/gmake -f &quot;/Users/daryl/GitHub/PiTubeDirect/src/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/65816/65816.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/65816/65816.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/65816/tuberom_65816.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/65816/tuberom_dominic65816.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/65816/tuberom_reco65816.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/NS32016/32016.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/NS32016/32016.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/NS32016/Decode.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/NS32016/Decode.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/NS32016/NSDis.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/NS32016/NSDis.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/NS32016/Profile.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/NS32016/Profile.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/NS32016/Trap.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/NS32016/Trap.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/NS32016/defs.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/NS32016/mem32016.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/NS32016/mem32016.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/NS32016/pandora/PandoraV0_61.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/NS32016/pandora/PandoraV2_00.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/armbasic.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/armbasic.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/armc-cstartup.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/armc-cstubs.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/armc-start.S">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/cache.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/cache.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-32016.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-32016.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-65816.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-65816.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-65tube.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-65tube.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-65tubeasm.S">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-65tubejit.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-65tubejit.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-80186.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-80186.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-arm2.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-arm2.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-armnative.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-armnative.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-armnativeasm.S">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-defs.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-defs.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-f100.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-f100.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-lib6502.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-lib6502.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-mc6809nc.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-mc6809nc.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-null.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-null.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-opc5ls.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-opc5ls.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-opc6.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-opc6.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-opc7.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-opc7.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-pdp11.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-pdp11.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-z80.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/copro-z80.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/cpu80186/Client86_v1_01.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/cpu80186/cpu80186.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/cpu80186/cpu80186.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/cpu80186/i386dasm.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/cpu80186/iop80186.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/cpu80186/iop80186.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/cpu80186/mem80186.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/cpu80186/mem80186.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/darm/armv7-tbl.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/darm/armv7-tbl.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/darm/armv7.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/darm/darm-internal.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/darm/darm-tbl.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/darm/darm-tbl.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/darm/darm.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/darm/darm.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/darm/thumb-tbl.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/darm/thumb-tbl.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/darm/thumb.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/darm/thumb2-decoder.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/darm/thumb2-tbl.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/darm/thumb2-tbl.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/darm/thumb2.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/darm/thumb2.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/f100/f100.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/f100/f100.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/f100/tuberom.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/f100/tuberom.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/framebuffer/fonts.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/framebuffer/fonts.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/framebuffer/framebuffer.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/framebuffer/framebuffer.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/framebuffer/module_colourtrans.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/framebuffer/module_colourtrans.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/framebuffer/primitives.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/framebuffer/primitives.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/framebuffer/screen_modes.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/framebuffer/screen_modes.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/framebuffer/swi_impl.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/framebuffer/teletext.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/framebuffer/teletext.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/info.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/info.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/jit.S">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/lib6502.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/lib6502.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/logging.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/logging.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/mame/arm.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/mame/arm.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/mc6809nc/mc6809.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/mc6809nc/mc6809.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/opc5ls/opc5ls.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/opc5ls/opc5ls.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/opc5ls/tuberom.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/opc5ls/tuberom.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/opc6/opc6.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/opc6/opc6.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/opc6/tuberom.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/opc6/tuberom.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/opc7/opc7.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/opc7/opc7.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/opc7/tuberom.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/opc7/tuberom.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/pdp11/pdp11.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/pdp11/pdp11.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/pdp11/tuberom.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/pdp11/tuberom.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/performance.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/performance.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/programs.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/programs.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/rpi-armtimer.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/rpi-armtimer.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/rpi-aux.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/rpi-aux.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/rpi-gpio.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/rpi-gpio.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/rpi-interrupts.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/rpi-interrupts.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/rpi-mailbox-interface.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/rpi-mailbox-interface.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/rpi-mailbox.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/rpi-mailbox.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/rpi-systimer.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/rpi-systimer.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/swi.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/swi.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/tube-client.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/tube-client.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/tube-commands.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/tube-commands.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/tube-defs.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/tube-env.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/tube-exception.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/tube-isr.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/tube-isr.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/tube-lib.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/tube-lib.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/tube-swi.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/tube-swi.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/tube-ula.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/tube-ula.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/tube.S">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/tuberom_6502.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/tuberom_6502.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/tuberom_6502_turbo.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/tuberom_6809.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/tuberom_6809.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/tuberom_arm.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/tuberom_arm.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/tuberom_z80.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/tuberom_z80.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/tubevc.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/tubevc.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/utils.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/utils.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/yaze/mem_mmu.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/yaze/simz80.c">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/yaze/simz80.h">
+			<Option target="tube-client"/>
+		</Unit>
+		<Unit filename="/Users/daryl/GitHub/PiTubeDirect/src/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
