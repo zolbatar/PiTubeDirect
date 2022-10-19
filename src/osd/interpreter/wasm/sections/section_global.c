@@ -5,10 +5,10 @@
 #include <stdlib.h>
 
 void section_global(buffer_t *bf, uint32_t size, wasm_t *wat) {
-	size_t p = bf->pos;
+	size_t pos = bf->pos;
 	wat->num_globals = read_leb128_32(bf);
 	if (trace >= LogDetail)
-		print("%d global section(s) at 0x%07lX\n", wat->num_globals, p);
+		print("%d global section(s) at 0x%07lX\n", wat->num_globals, pos);
 
 	// Allocate space
 	wat->section_globals = malloc(sizeof(section_global_t) * wat->num_globals);

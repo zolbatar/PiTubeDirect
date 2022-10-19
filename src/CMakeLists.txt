@@ -41,14 +41,14 @@ set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS}" )
 # are in the toolchain files toolchain-arm-none-eabi-bcm2835.cmake, etc.
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffixed-r7" )
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Ofast" )
-set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wno-missing-field-initializers -Wno-unused-parameter" )
+set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DPITUBE -DCAPSTONE_HAS_ARM -Wall -Wextra -Wno-missing-field-initializers -Wno-unused-parameter -Wno-old-style-declaration -Wno-overflow -Wno-implicit-fallthrough -Wno-misleading-indentation" )
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -nostartfiles" )
 #set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fomit-frame-pointer " )
 
 #set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fanalyzer" )
 #set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -flto" )
 
-set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wredundant-decls -Wno-maybe-uninitialized -Wno-long-long -Wpacked -Wundef -Wno-shadow  -Wno-missing-braces -Wno-sign-compare -Wno-multichar -Wnarrowing -Woverflow -Wconversion -Wjump-misses-init -Wlogical-not-parentheses -Wnull-dereference -Winit-self -Wpointer-arith  -Wwrite-strings -Wunreachable-code -Wshadow -Wdouble-promotion  -Wformat-truncation -fstack-usage -Wconversion" )
+set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-maybe-uninitialized -Wno-long-long -Wno-shadow  -Wno-missing-braces -Wno-sign-compare -Wno-multichar " )
 
 # other options to try which fail currently :
 #set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wmissing-declarations")
@@ -259,6 +259,7 @@ file( GLOB copro_f100_files
 )
 
 # OS/D
+include_directories(${CMAKE_SOURCE_DIR}/osd/interpreter/capstone/include)
 file( GLOB copro_osd_files
     copro-osd.h
     copro-osd.c
@@ -269,7 +270,8 @@ file( GLOB copro_osd_files
     osd/osd-vdu.h
     osd/osd-vdu.c
 
-    osd/interpreter/wasm.c osd/interpreter/build_vm.c osd/interpreter/run_vm.c osd/interpreter/kernel.c osd/interpreter/wasm_shared.h osd/interpreter/printf.c
+    osd/interpreter/wasm.c osd/interpreter/build_vm.c osd/interpreter/run_vm.c osd/interpreter/stack.c 
+    osd/interpreter/kernel.c osd/interpreter/wasm_shared.h osd/interpreter/printf.c
 
     osd/interpreter/wasm/sections/sections.h
     osd/interpreter/wasm/sections/section_type.c osd/interpreter/wasm/sections/section_function.c osd/interpreter/wasm/sections/section_memory.c 
@@ -280,7 +282,14 @@ file( GLOB copro_osd_files
     osd/interpreter/wasm/load_wasm.c osd/interpreter/import_wat.c osd/interpreter/wasm/expression.c osd/interpreter/wasm/read_instruction.c
     osd/interpreter/wasm/buffer.h osd/interpreter/wasm/instructions.h osd/interpreter/wasm/load_wasm.h osd/interpreter/wasm/leb128.h
 
-    osd/interpreter/containers/list.c osd/interpreter/containers/vector.c
+    osd/interpreter/capstone/arch/ARM/ARMDisassembler.c osd/interpreter/capstone/arch/ARM/ARMInstPrinter.c osd/interpreter/capstone/arch/ARM/ARMMapping.c
+    osd/interpreter/capstone/arch/ARM/ARMModule.c
+
+    osd/interpreter/capstone/cs.c osd/interpreter/capstone/MCInst.c osd/interpreter/capstone/MCInstrDesc.c 
+    osd/interpreter/capstone/MCRegisterInfo.c osd/interpreter/capstone/SStream.c osd/interpreter/capstone/utils.c
+
+    osd/interpreter/lightning/lightning.c osd/interpreter/lightning/jit_memory.c 
+    osd/interpreter/lightning/jit_note.c osd/interpreter/lightning/jit_size.c osd/interpreter/lightning/jit_disasm.c
 )
 
 # PDP 11

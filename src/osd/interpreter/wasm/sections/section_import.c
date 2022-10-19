@@ -10,10 +10,10 @@
 #define IMPORT_TYPE_GLOBAL 3
 
 void section_import(buffer_t *bf, uint32_t size, wasm_t *wat) {
-	size_t p = bf->pos;
+	size_t pos = bf->pos;
 	wat->num_imports = read_leb128_32(bf);
 	if (trace >= LogDetail)
-		print("%d import section(s) at 0x%07lX\n", wat->num_imports, p);
+		print("%d import section(s) at 0x%07lX\n", wat->num_imports, pos);
 
 	// Allocate space
 	wat->section_imports = malloc(sizeof(section_import_t) * wat->num_imports);

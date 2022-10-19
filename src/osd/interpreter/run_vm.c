@@ -10,7 +10,6 @@
 #include <capstone/platform.h>
 
 size_t SP;
-static uint8_t *heap_space;
 jit_state_t *_jit;
 typedef int (*start)(void);
 
@@ -75,7 +74,7 @@ void set_local(local_t *locals, wasm_t *wat, const cvec_instruction_t_value *t) 
 		case TYPE_F64:
 			break;
 		default:
-			fprintf(stderr, "Unsupported");
+			print("Unsupported");
 			exit(1);
 	}
 }
@@ -239,7 +238,7 @@ void run_function(wasm_t *wat, section_code_t *func) {
 				break;
 			}
 			case INSTRUCTION_UNREACHABLE:
-				fprintf(stderr, "Unreachable hit\n");
+				print("Unreachable hit\n");
 				exit(1);
 			case INSTRUCTION_I32_CONST: {
 				int32_t v = read_int_simple(&RAM[PC]);
@@ -265,7 +264,7 @@ static void setup_capstone() {
 	setup.vsnprintf = vsnprintf;
 	cs_err err = cs_option(0, CS_OPT_MEM, (size_t)&setup);
 	if (err != CS_ERR_OK) {
-		printf("Error (cs_option): %d\n", err);
+		print("Error (cs_option): %d\n", err);
 	}
 #endif
 }
@@ -277,32 +276,36 @@ static void disassemble(start exec, jit_word_t sz) {
 	cs_insn *insn;
 	size_t count;
 #ifdef CAPSTONE_HAS_X86
+	print("Architecture: X86\n");
 	cs_err err = cs_open(CS_ARCH_X86, CS_MODE_64, &handle);
 #else
 #ifdef PITUBE
+	print("Architecture: ARM\n");
 	cs_err err = cs_open(CS_ARCH_ARM, CS_MODE_ARM, &handle);
 #else
+	print("Architecture: AARCH64\n");
 	cs_err err = cs_open(CS_ARCH_ARM64, CS_MODE_ARM, &handle);
 #endif
 #endif
 	if (err != CS_ERR_OK) {
-		printf("Disassemble error: %d\n", err);
+		print("Disassemble error: %d\n", err);
 	}
 	cs_option(handle, CS_OPT_DETAIL, CS_OPT_ON);
 	count = cs_disasm(handle, (const unsigned char *)exec, sz, (size_t)_jit->code.ptr, 0, &insn);
+	print("There are %d CPU instructions\n", count);
 	if (count > 0) {
 		size_t j;
 		for (j = 0; j < count; j++) {
 #ifdef PITUBE
-			printf("0x%X:\t%s\t%s\n", insn[j].address, insn[j].mnemonic, insn[j].op_str);
+			print("0x%X:\t%s\t%s\n", (uint32_t)insn[j].address, insn[j].mnemonic, insn[j].op_str);
 #else
-			printf("0x%" PRIx64 ":\t%s\t%s\n", insn[j].address, insn[j].mnemonic, insn[j].op_str);
+			print("0x%" PRIx64 ":\t%s\t%s\n", insn[j].address, insn[j].mnemonic, insn[j].op_str);
 #endif
 		}
 		cs_free(insn, count);
 	}
 	else {
-		printf("ERROR: Failed to disassemble given code!");
+		print("ERROR: Failed to disassemble given code!");
 	}
 	cs_close(&handle);
 #endif
@@ -323,15 +326,16 @@ void compile_function(wasm_t *wat, section_code_t *func) {
 
 
 			default:
-				printf("Unknown opcode during native compile\n");
+				print("Unknown opcode during native compile\n");
 				exit(1);
 		}
 	}
 }
 
 void run_vm(wasm_t *wat, uint8_t *_RAM, size_t RAM_size, uint32_t heap_start) {
+	print("Starting native compile\n");
 	setup_capstone();
-	init_jit("Dork");
+	init_jit("Daric");
 	_jit = jit_new_state();
 
 	jit_prolog();
@@ -347,12 +351,12 @@ void run_vm(wasm_t *wat, uint8_t *_RAM, size_t RAM_size, uint32_t heap_start) {
 	 * wat->ctors_function
 	 * wat->start_function
 	 */
-	printf("Compilation complete\n");
+	print("Compilation complete\n");
 
 	// Code & data size
 	jit_realize();
 	if (!_jitc->realize) {
-		printf("Failed to realise");
+		print("Failed to realise");
 	}
 
 	// Do compile
@@ -364,14 +368,14 @@ void run_vm(wasm_t *wat, uint8_t *_RAM, size_t RAM_size, uint32_t heap_start) {
 #endif
 	start exec = jit_emit_void();
 	if (exec == NULL) {
-		printf("Code generation failed");
+		print("Code generation failed");
 	}
 
 	// Size?
 	jit_word_t code_size;
 	jit_get_code(&code_size);
 #ifdef VERBOSE_COMPILE
-	printf("Code size: %ld [%ld] bytes\n", code_size, sz);
+	print("Code size: %ld [%ld] bytes\n", code_size, sz);
 #endif
 
 #ifndef DISABLE_DISASM
@@ -379,32 +383,13 @@ void run_vm(wasm_t *wat, uint8_t *_RAM, size_t RAM_size, uint32_t heap_start) {
 #endif
 
 	jit_clear_state();
-	exec();
+	print("Preparing to execute\n");
+	//exec();
+	print("Execution complete\n");
 	jit_destroy_state();
 #ifndef RICH
 	free(code);
 #endif
-	printf("Execution complete\n");
 	finish_jit();
 	return;
-
-
-
-
-
-
-
-	// Reset state
-	/*heap_space = _RAM;
-	SP = heap_start;
-	if (trace >= LogTrace)
-		print("Stack pointer at start: %ld\n", SP);
-	if (trace >= LogInfo)
-		print("Calling global constructors...\n");
-	run_function(wat, &wat->section_codes[wat->ctors_function]);
-	if (trace >= LogInfo)
-		print("Calling start...\n");
-	run_function(wat, &wat->section_codes[wat->start_function]);
-	if (trace >= LogInfo)
-		print("Finished\n");*/
 }

@@ -23,6 +23,7 @@ static int instruction_t_cmp(const instruction_t *a, const instruction_t *b) {
 	return a == b;
 }
 #define i_val instruction_t
+#define i_opt 0
 #define i_cmp instruction_t_cmp
 #include "../stc/cvec.h"
 

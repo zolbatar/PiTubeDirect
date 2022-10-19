@@ -24,7 +24,7 @@ uint8_t process_instruction(cvec_instruction_t *code, buffer_t *bf) {
 			break;
 
 		case INSTRUCTION_I64_CONST:
-			printf("64Bit WASM instructions are not supported\n");
+			print("64Bit WASM instructions are not supported\n");
 			exit(1);
 
 			/*
