@@ -35,7 +35,8 @@
 
 #include "copro-armnative.h"
 #include "armbasic.h"
-#include "DaricBlob.h"
+//#include "DaricBlob.h"
+#include "DorthBlob.h"
 
 #include "rpi-aux.h"
 #include "rpi-armtimer.h"
@@ -380,7 +381,8 @@ void copro_armnative_emulator()
 
     // Always copy ARM Basic into memory (in case it's been corrupted)
     copy_armbasic();
-    copy_daric();
+    // copy_daric();
+    copy_dorth();
 
     // When the default exit handler is called, we return here
     setjmp(enterOS);

@@ -24,14 +24,16 @@ static int doCmdDis(const char *params);
 static int doCmdFill(const char *params);
 static int doCmdCrc(const char *params);
 static int doCmdArmBasic(const char *params);
-static int doCmdDaric(const char *params);
+// static int doCmdDaric(const char *params);
+static int doCmdDorth(const char *params);
 static int doCmdPiVDU(const char *params);
 static int doCmdPiLIFE(const char *params);
 static int doCmdFX(const char *params);
 
 // Include ARM Basic
 #include "armbasic.h"
-#include "DaricMem.h"
+//#include "DaricMem.h"
+#include "DorthMem.h"
 
 // For fb_set_vdu_device (used by *PIVDU)
 #include "framebuffer/framebuffer.h"
@@ -66,7 +68,8 @@ typedef struct
 cmd_type cmds[] = {
     {"ARMBASIC", "[ <arg> ... ]", doCmdArmBasic, MODE_USER, 0},
     {"CRC", "<start> <end>", doCmdCrc, MODE_USER, 0},
-    {"DARIC", "[ <arg> ... ]", doCmdDaric, MODE_USER, 0},
+    //    {"DARIC", "[ <arg> ... ]", doCmdDaric, MODE_USER, 0},
+    {"DORTH", "[ <arg> ... ]", doCmdDorth, MODE_USER, 0},
     {"DIS", "<address>", doCmdDis, MODE_USER, 0},
     {"FILL", "<start> <end> <data>", doCmdFill, MODE_USER, 0},
     {"FX", "<a>, <x>, <y>", doCmdFX, MODE_USER, 1},
@@ -456,11 +459,20 @@ static int doCmdArmBasic(const char *params)
     return 0;
 }
 
-static int doCmdDaric(const char *params)
+/*static int doCmdDaric(const char *params)
 {
     FunctionPtr_Type f;
     // Cast address to a generic function pointer
     f = (FunctionPtr_Type)DARIC_EXEC;
+    f(params);
+    return 0;
+}*/
+
+static int doCmdDorth(const char *params)
+{
+    FunctionPtr_Type f;
+    // Cast address to a generic function pointer
+    f = (FunctionPtr_Type)DORTH_EXEC;
     f(params);
     return 0;
 }

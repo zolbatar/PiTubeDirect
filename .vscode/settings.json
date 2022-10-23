@@ -1,5 +1,6 @@
 {
   "files.associations": {
-    "tube-client.h": "c"
+    "tube-client.h": "c",
+    "armbasic.h": "c"
   }
 }
